@@ -2,31 +2,29 @@
 
 import { ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
-interface MobileTableProps {
-  data: any[];
+interface MobileTableProps<T = Record<string, unknown>> {
+  data: T[];
   columns: {
     key: string;
     label: string;
-    render?: (value: any, item: any) => ReactNode;
+    render?: (value: unknown, item: T) => ReactNode;
   }[];
   onSelect?: (id: string, checked: boolean) => void;
   selectedItems?: string[];
-  actions?: (item: any) => ReactNode;
+  actions?: (item: T) => ReactNode;
   emptyMessage?: string;
 }
 
-export function MobileTable({ 
+export function MobileTable<T extends Record<string, unknown> & { _id: string }>({ 
   data, 
   columns, 
   onSelect, 
   selectedItems = [], 
   actions,
   emptyMessage = "No data available"
-}: MobileTableProps) {
+}: MobileTableProps<T>) {
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -53,8 +51,8 @@ export function MobileTable({
               
               <div className="flex-1 min-w-0 space-y-2">
                 {columns.map((column) => {
-                  const value = item[column.key];
-                  const displayValue = column.render ? column.render(value, item) : value;
+                  const value = item[column.key as keyof T];
+                  const displayValue = column.render ? column.render(value, item) : String(value || '');
                   
                   return (
                     <div key={column.key} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
@@ -83,12 +81,12 @@ export function MobileTable({
 }
 
 // Desktop table component for larger screens
-interface DesktopTableProps extends MobileTableProps {
+interface DesktopTableProps<T = Record<string, unknown>> extends MobileTableProps<T> {
   showSelectAll?: boolean;
   onSelectAll?: (checked: boolean) => void;
 }
 
-export function DesktopTable({ 
+export function DesktopTable<T extends Record<string, unknown> & { _id: string }>({ 
   data, 
   columns, 
   onSelect, 
@@ -97,7 +95,7 @@ export function DesktopTable({
   showSelectAll,
   onSelectAll,
   emptyMessage = "No data available"
-}: DesktopTableProps) {
+}: DesktopTableProps<T>) {
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -147,8 +145,8 @@ export function DesktopTable({
                 </td>
               )}
               {columns.map((column) => {
-                const value = item[column.key];
-                const displayValue = column.render ? column.render(value, item) : value;
+                const value = item[column.key as keyof T];
+                const displayValue = column.render ? column.render(value, item) : String(value || '');
                 
                 return (
                   <td key={column.key} className="p-3 text-sm">
@@ -170,7 +168,7 @@ export function DesktopTable({
 }
 
 // Responsive table that switches between mobile and desktop views
-export function ResponsiveTable(props: DesktopTableProps) {
+export function ResponsiveTable<T extends Record<string, unknown> & { _id: string }>(props: DesktopTableProps<T>) {
   return (
     <>
       <div className="block lg:hidden">
