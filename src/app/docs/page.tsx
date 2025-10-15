@@ -1,92 +1,117 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { 
-  BookOpen, 
-  Settings, 
-  Users, 
-  Send, 
-  Mail, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import {
+  BookOpen,
+  Settings,
+  Users,
+  Send,
+  Mail,
   Tags,
   ArrowRight,
   Zap,
   Shield,
   Globe,
-  Clock
-} from 'lucide-react';
+  Clock,
+} from "lucide-react";
 
 const quickStartGuides = [
   {
-    title: 'Getting Started',
-    description: 'Set up your first Gmail configuration and send your first campaign',
-    href: '/docs/getting-started',
+    title: "Getting Started",
+    description:
+      "Set up your first Gmail configuration and send your first campaign",
+    href: "/docs/getting-started",
     icon: Zap,
-    time: '5 min read',
-    difficulty: 'Beginner'
+    time: "5 min read",
+    difficulty: "Beginner",
   },
   {
-    title: 'Gmail Setup',
-    description: 'Configure Gmail accounts with app passwords for secure sending',
-    href: '/docs/gmail-setup',
+    title: "Gmail Setup",
+    description:
+      "Configure Gmail accounts with app passwords for secure sending",
+    href: "/docs/gmail-setup",
     icon: Settings,
-    time: '10 min read',
-    difficulty: 'Beginner'
+    time: "10 min read",
+    difficulty: "Beginner",
   },
   {
-    title: 'User Management',
-    description: 'Import users from CSV and organize them into categories',
-    href: '/docs/user-management',
+    title: "User Management",
+    description: "Import users from CSV and organize them into categories",
+    href: "/docs/user-management",
     icon: Users,
-    time: '8 min read',
-    difficulty: 'Beginner'
+    time: "8 min read",
+    difficulty: "Beginner",
   },
   {
-    title: 'Creating Campaigns',
-    description: 'Design and send professional email campaigns',
-    href: '/docs/campaigns',
+    title: "Creating Campaigns",
+    description: "Design and send professional email campaigns",
+    href: "/docs/campaigns",
     icon: Send,
-    time: '12 min read',
-    difficulty: 'Intermediate'
-  }
+    time: "12 min read",
+    difficulty: "Intermediate",
+  },
 ];
 
 const features = [
   {
-    title: 'Multiple Gmail Accounts',
-    description: 'Manage multiple Gmail configurations with daily limits and monitoring',
+    title: "Multiple Gmail Accounts",
+    description:
+      "Manage multiple Gmail configurations with daily limits and monitoring",
     icon: Settings,
-    href: '/docs/gmail-setup'
+    href: "/docs/gmail-setup",
   },
   {
-    title: 'User Categories',
-    description: 'Organize recipients into categories for targeted campaigns',
+    title: "User Categories",
+    description: "Organize recipients into categories for targeted campaigns",
     icon: Tags,
-    href: '/docs/user-management'
+    href: "/docs/user-management",
   },
   {
-    title: 'Email Tracking',
-    description: 'Monitor delivery, opens, clicks, and campaign performance',
+    title: "Email Tracking",
+    description: "Monitor delivery, opens, clicks, and campaign performance",
     icon: Mail,
-    href: '/docs/email-tracking'
+    href: "/docs/email-tracking",
   },
   {
-    title: 'Bulk Import',
-    description: 'Import thousands of users from CSV files with validation',
+    title: "Bulk Import",
+    description: "Import thousands of users from CSV files with validation",
     icon: Users,
-    href: '/docs/user-management'
-  }
+    href: "/docs/user-management",
+  },
 ];
 
 const apiEndpoints = [
-  { method: 'GET', path: '/api/users', description: 'Fetch users with filtering and pagination' },
-  { method: 'POST', path: '/api/users', description: 'Create a new user' },
-  { method: 'POST', path: '/api/users/upload-csv', description: 'Bulk import users from CSV' },
-  { method: 'GET', path: '/api/campaigns', description: 'List all campaigns' },
-  { method: 'POST', path: '/api/campaigns', description: 'Create a new campaign' },
-  { method: 'POST', path: '/api/campaigns/[id]/send', description: 'Send or schedule a campaign' }
+  {
+    method: "GET",
+    path: "/api/users",
+    description: "Fetch users with filtering and pagination",
+  },
+  { method: "POST", path: "/api/users", description: "Create a new user" },
+  {
+    method: "POST",
+    path: "/api/users/upload-csv",
+    description: "Bulk import users from CSV",
+  },
+  { method: "GET", path: "/api/campaigns", description: "List all campaigns" },
+  {
+    method: "POST",
+    path: "/api/campaigns",
+    description: "Create a new campaign",
+  },
+  {
+    method: "POST",
+    path: "/api/campaigns/[id]/send",
+    description: "Send or schedule a campaign",
+  },
 ];
 
 export default function DocsPage() {
@@ -103,12 +128,13 @@ export default function DocsPage() {
           Email Campaign Manager Documentation
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Everything you need to know to create, manage, and send professional email campaigns
+          Everything you need to know to create, manage, and send professional
+          email campaigns
         </p>
       </div>
 
       {/* Quick Start Guides */}
-      <Card className="shadow-xl border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+      <Card className="border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100">
           <CardTitle className="flex items-center gap-3 text-2xl">
             <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg flex items-center justify-center">
@@ -136,15 +162,21 @@ export default function DocsPage() {
                           <Badge variant="secondary" className="text-xs">
                             {guide.time}
                           </Badge>
-                          <Badge 
-                            variant={guide.difficulty === 'Beginner' ? 'default' : 'secondary'}
+                          <Badge
+                            variant={
+                              guide.difficulty === "Beginner"
+                                ? "default"
+                                : "secondary"
+                            }
                             className="text-xs"
                           >
                             {guide.difficulty}
                           </Badge>
                         </div>
                       </div>
-                      <h3 className="font-semibold text-lg mb-2">{guide.title}</h3>
+                      <h3 className="font-semibold text-lg mb-2">
+                        {guide.title}
+                      </h3>
                       <p className="text-sm text-muted-foreground mb-4">
                         {guide.description}
                       </p>
@@ -162,7 +194,7 @@ export default function DocsPage() {
       </Card>
 
       {/* Features Overview */}
-      <Card className="shadow-xl border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+      <Card className=" border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100">
           <CardTitle className="flex items-center gap-3 text-2xl">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
@@ -199,7 +231,7 @@ export default function DocsPage() {
       </Card>
 
       {/* API Reference */}
-      <Card className="shadow-xl border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+      <Card className=" border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100">
           <CardTitle className="flex items-center gap-3 text-2xl">
             <div className="w-8 h-8 bg-gradient-to-r from-orange-600 to-red-600 rounded-lg flex items-center justify-center">
@@ -214,10 +246,15 @@ export default function DocsPage() {
         <CardContent className="p-6">
           <div className="space-y-3">
             {apiEndpoints.map((endpoint, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center gap-4">
-                  <Badge 
-                    variant={endpoint.method === 'GET' ? 'default' : 'secondary'}
+                  <Badge
+                    variant={
+                      endpoint.method === "GET" ? "default" : "secondary"
+                    }
                     className="font-mono text-xs"
                   >
                     {endpoint.method}

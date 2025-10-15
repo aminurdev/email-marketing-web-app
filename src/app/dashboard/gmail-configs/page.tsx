@@ -262,7 +262,7 @@ export default function GmailConfigs() {
         </Button>
       </div>
 
-      <Card className="shadow-xl border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+      <Card className="border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100 pb-6">
           <CardTitle className="flex items-center gap-3 text-xl">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -336,7 +336,7 @@ export default function GmailConfigs() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-xl border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+      <Card className="border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100 pb-6">
           <div className="flex justify-between items-center">
             <div>

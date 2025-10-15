@@ -288,7 +288,7 @@ Bob Wilson,bob.wilson@example.com`;
         </Button>
       </div>
 
-      <Card className="shadow-xl border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+      <Card className="border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100 pb-6">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-3 text-xl">
