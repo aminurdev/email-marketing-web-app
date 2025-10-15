@@ -39,8 +39,7 @@ import {
   Trash2,
   TrendingUp,
   Target,
-  Eye,
-  X
+  Eye
 } from "lucide-react";
 import {
   AlertDialog,

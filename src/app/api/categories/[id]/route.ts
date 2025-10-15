@@ -5,11 +5,11 @@ import UserEmail from '@/models/UserEmail';
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectDB();
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
         const { name, description, color } = body;
 
@@ -67,11 +67,11 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectDB();
-        const { id } = params;
+        const { id } = await params;
 
         // Find the category first
         const category = await Category.findById(id);
