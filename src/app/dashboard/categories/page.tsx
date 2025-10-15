@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -81,6 +82,7 @@ interface User {
 }
 
 export default function Categories() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -219,31 +221,36 @@ export default function Categories() {
     }
   };
 
-  const fetchCategoryUsers = async (category: Category) => {
-    setSelectedCategory(category);
-    setLoadingUsers(true);
-    setShowUsersDialog(true);
-
-    try {
-      const response = await fetch(`/api/users?category=${encodeURIComponent(category.name)}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setSelectedCategoryUsers(data.data);
-      } else {
-        toast.error("Failed to fetch users", {
-          description: data.error,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to fetch category users:", error);
-      toast.error("Failed to fetch users", {
-        description: "An error occurred while fetching users.",
-      });
-    } finally {
-      setLoadingUsers(false);
-    }
+  const navigateToUsersWithCategory = (categoryName: string) => {
+    router.push(`/dashboard/users?category=${encodeURIComponent(categoryName)}`);
   };
+
+  // Keep the original function for potential future use (modal view)
+  // const fetchCategoryUsers = async (category: Category) => {
+  //   setSelectedCategory(category);
+  //   setLoadingUsers(true);
+  //   setShowUsersDialog(true);
+
+  //   try {
+  //     const response = await fetch(`/api/users?category=${encodeURIComponent(category.name)}`);
+  //     const data = await response.json();
+      
+  //     if (data.success) {
+  //       setSelectedCategoryUsers(data.data);
+  //     } else {
+  //       toast.error("Failed to fetch users", {
+  //         description: data.error,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch category users:", error);
+  //     toast.error("Failed to fetch users", {
+  //       description: "An error occurred while fetching users.",
+  //     });
+  //   } finally {
+  //     setLoadingUsers(false);
+  //   }
+  // };
 
   const colorOptions = [
     { value: "#3B82F6", name: "Blue", class: "bg-blue-500" },
@@ -578,7 +585,7 @@ export default function Categories() {
                           variant="ghost" 
                           size="sm" 
                           className="h-8 w-8 p-0"
-                          onClick={() => fetchCategoryUsers(category)}
+                          onClick={() => navigateToUsersWithCategory(category.name)}
                           title="View users in this category"
                         >
                           <Eye className="h-4 w-4" />

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,6 +46,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
+import { Pagination } from '@/components/ui/pagination';
 
 interface User {
   _id: string;
@@ -62,12 +64,18 @@ interface Category {
   userCount: number;
 }
 
-export default function UsersPage() {
+function UsersPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [users, setUsers] = useState<User[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [showUpload, setShowUpload] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadCategory, setUploadCategory] = useState('');
@@ -86,18 +94,35 @@ export default function UsersPage() {
       const params = new URLSearchParams();
       if (selectedCategory) params.append('category', selectedCategory);
       if (searchTerm) params.append('search', searchTerm);
+      params.append('page', currentPage.toString());
+      params.append('limit', '50');
       
       const response = await fetch(`/api/users?${params}`);
       const data = await response.json();
       if (data.success) {
         setUsers(data.data);
+        setTotalPages(data.pagination.pages);
+        setTotalUsers(data.pagination.total);
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, currentPage]);
+
+  // Initialize from URL parameters
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    const pageParam = searchParams.get('page');
+    
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+    if (pageParam) {
+      setCurrentPage(parseInt(pageParam) || 1);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchUsers();
@@ -114,6 +139,28 @@ export default function UsersPage() {
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     }
+  };
+
+  const updateURL = (category: string, page: number) => {
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (page > 1) params.set('page', page.toString());
+    
+    const newURL = params.toString() ? `?${params.toString()}` : '';
+    router.push(`/dashboard/users${newURL}`, { scroll: false });
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+    setLoading(true);
+    updateURL(category, 1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setLoading(true);
+    updateURL(selectedCategory, page);
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -405,7 +452,7 @@ Bob Wilson,bob.wilson@example.com`;
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="font-medium">
-                {users.length} users loaded
+                {totalUsers} total users
               </span>
             </div>
           </div>
@@ -733,11 +780,14 @@ Bob Wilson,bob.wilson@example.com`;
                       type="text"
                       placeholder="Search users by name or email..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1);
+                      }}
                       className="pl-10 h-10 sm:h-10 border-gray-200 focus:border-blue-300 focus:ring-blue-200 touch-manipulation"
                     />
                   </div>
-                  <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
+                  <Select value={selectedCategory || "all"} onValueChange={(value) => handleCategoryChange(value === "all" ? "" : value)}>
                     <SelectTrigger className="w-full sm:w-[200px] h-10 border-gray-200 touch-manipulation">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
@@ -921,10 +971,79 @@ Bob Wilson,bob.wilson@example.com`;
                   </TableBody>
                 </Table>
               </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    totalItems={totalUsers}
+                    itemsPerPage={50}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function UsersPageLoading() {
+  return (
+    <div className="space-y-6">
+      {/* Header Skeleton */}
+      <div className="flex justify-between items-center">
+        <div className="space-y-2">
+          <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg w-64 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-80 animate-pulse"></div>
+        </div>
+        <div className="h-10 bg-gray-200 rounded-lg w-32 animate-pulse"></div>
+      </div>
+
+      {/* Content Skeleton */}
+      <Card className="shadow-lg">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Search Bar Skeleton */}
+          <div className="flex gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
+            <div className="flex-1 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div className="w-48 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+          </div>
+
+          {/* Table Skeleton */}
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg animate-pulse">
+                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+                <div className="w-20 h-6 bg-gray-300 rounded"></div>
+                <div className="w-16 h-6 bg-gray-300 rounded"></div>
+                <div className="w-24 h-4 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <Suspense fallback={<UsersPageLoading />}>
+      <UsersPageContent />
+    </Suspense>
   );
 }
