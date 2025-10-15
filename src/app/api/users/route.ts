@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     try {
         await connectDB();
         const body = await request.json();
-        const { email, firstName, lastName, category, tags = [] } = body;
+        const { email, firstName, lastName, category } = body;
 
         if (!email || !category) {
             return NextResponse.json(
@@ -70,7 +70,6 @@ export async function POST(request: NextRequest) {
             firstName,
             lastName,
             category,
-            tags,
         });
 
         await user.save();

@@ -1,20 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -22,7 +28,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +39,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -41,17 +47,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { 
-  Send, 
-  Calendar, 
-  Users, 
+  Send,
+  Calendar,
+  Users,
   Mail,
   AlertTriangle,
   CheckCircle2,
@@ -68,9 +69,9 @@ import {
   Monitor,
   Smartphone,
   Tablet,
-  FileText
-} from 'lucide-react';
-import { toast } from 'sonner';
+  FileText,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface GmailConfig {
   _id: string;
@@ -99,7 +100,7 @@ interface Campaign {
     name: string;
     email: string;
   };
-  status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed';
+  status: "draft" | "scheduled" | "sending" | "completed" | "failed";
   scheduledAt?: string;
   sentCount: number;
   failedCount: number;
@@ -114,20 +115,22 @@ export default function Campaigns() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
-  const [activeTab, setActiveTab] = useState('list');
+  const [activeTab, setActiveTab] = useState("list");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [previewDevice, setPreviewDevice] = useState<
+    "desktop" | "tablet" | "mobile"
+  >("desktop");
   const [formData, setFormData] = useState({
-    name: '',
-    subject: '',
-    htmlContent: '',
-    textContent: '',
+    name: "",
+    subject: "",
+    htmlContent: "",
+    textContent: "",
     recipients: [] as string[],
-    gmailConfigId: '',
-    scheduleAt: '',
+    gmailConfigId: "",
+    scheduleAt: "",
   });
 
   useEffect(() => {
@@ -138,8 +141,8 @@ export default function Campaigns() {
   const fetchData = async () => {
     try {
       const [configsRes, categoriesRes] = await Promise.all([
-        fetch('/api/gmail-configs'),
-        fetch('/api/categories'),
+        fetch("/api/gmail-configs"),
+        fetch("/api/categories"),
       ]);
 
       const [configs, categories] = await Promise.all([
@@ -154,7 +157,7 @@ export default function Campaigns() {
         setCategories(categories.data);
       }
     } catch (error) {
-      console.error('Failed to fetch data:', error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
@@ -163,17 +166,17 @@ export default function Campaigns() {
   const fetchCampaigns = async () => {
     try {
       const params = new URLSearchParams();
-      if (statusFilter) params.append('status', statusFilter);
-      if (searchTerm) params.append('search', searchTerm);
+      if (statusFilter) params.append("status", statusFilter);
+      if (searchTerm) params.append("search", searchTerm);
 
       const response = await fetch(`/api/campaigns?${params}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setCampaigns(data.data);
       }
     } catch (error) {
-      console.error('Failed to fetch campaigns:', error);
+      console.error("Failed to fetch campaigns:", error);
     }
   };
 
@@ -185,25 +188,25 @@ export default function Campaigns() {
     if (checked) {
       setFormData({
         ...formData,
-        recipients: [...formData.recipients, value]
+        recipients: [...formData.recipients, value],
       });
     } else {
       setFormData({
         ...formData,
-        recipients: formData.recipients.filter(r => r !== value)
+        recipients: formData.recipients.filter((r) => r !== value),
       });
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      subject: '',
-      htmlContent: '',
-      textContent: '',
+      name: "",
+      subject: "",
+      htmlContent: "",
+      textContent: "",
       recipients: [],
-      gmailConfigId: '',
-      scheduleAt: '',
+      gmailConfigId: "",
+      scheduleAt: "",
     });
     setEditingCampaign(null);
   };
@@ -213,13 +216,15 @@ export default function Campaigns() {
       name: campaign.name,
       subject: campaign.subject,
       htmlContent: campaign.htmlContent,
-      textContent: campaign.textContent || '',
+      textContent: campaign.textContent || "",
       recipients: [], // Will be populated based on campaign data
       gmailConfigId: campaign.gmailConfigId._id,
-      scheduleAt: campaign.scheduledAt ? new Date(campaign.scheduledAt).toISOString().slice(0, 16) : '',
+      scheduleAt: campaign.scheduledAt
+        ? new Date(campaign.scheduledAt).toISOString().slice(0, 16)
+        : "",
     });
     setEditingCampaign(campaign);
-    setActiveTab('create');
+    setActiveTab("create");
   };
 
   const handleDuplicate = (campaign: Campaign) => {
@@ -227,65 +232,79 @@ export default function Campaigns() {
       name: `${campaign.name} (Copy)`,
       subject: campaign.subject,
       htmlContent: campaign.htmlContent,
-      textContent: campaign.textContent || '',
+      textContent: campaign.textContent || "",
       recipients: [], // Will be populated based on campaign data
       gmailConfigId: campaign.gmailConfigId._id,
-      scheduleAt: '',
+      scheduleAt: "",
     });
     setEditingCampaign(null);
-    setActiveTab('create');
-    toast.success('Campaign duplicated', {
-      description: 'You can now modify and save the duplicated campaign.',
+    setActiveTab("create");
+    toast.success("Campaign duplicated", {
+      description: "You can now modify and save the duplicated campaign.",
     });
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.subject || !formData.htmlContent || !formData.gmailConfigId) {
-      toast.error('Missing required fields', {
-        description: 'Please fill in name, subject, content, and Gmail configuration.',
+    if (
+      !formData.name ||
+      !formData.subject ||
+      !formData.htmlContent ||
+      !formData.gmailConfigId
+    ) {
+      toast.error("Missing required fields", {
+        description:
+          "Please fill in name, subject, content, and Gmail configuration.",
       });
       return;
     }
 
     setSaving(true);
     const loadingToast = toast.loading(
-      editingCampaign ? 'Updating campaign...' : 'Saving campaign...', 
+      editingCampaign ? "Updating campaign..." : "Saving campaign...",
       {
-        description: 'Please wait while we save your campaign.',
+        description: "Please wait while we save your campaign.",
       }
     );
 
     try {
-      const url = editingCampaign ? `/api/campaigns/${editingCampaign._id}` : '/api/campaigns';
-      const method = editingCampaign ? 'PUT' : 'POST';
+      const url = editingCampaign
+        ? `/api/campaigns/${editingCampaign._id}`
+        : "/api/campaigns";
+      const method = editingCampaign ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
       toast.dismiss(loadingToast);
-      
+
       if (data.success) {
-        toast.success(`Campaign ${editingCampaign ? 'updated' : 'saved'} successfully!`, {
-          description: `Your campaign is ready with ${data.recipientCount} recipients.`,
-        });
+        toast.success(
+          `Campaign ${editingCampaign ? "updated" : "saved"} successfully!`,
+          {
+            description: `Your campaign is ready with ${data.recipientCount} recipients.`,
+          }
+        );
         resetForm();
-        setActiveTab('list');
+        setActiveTab("list");
         fetchCampaigns();
       } else {
-        toast.error(`Failed to ${editingCampaign ? 'update' : 'save'} campaign`, {
-          description: data.error,
-        });
+        toast.error(
+          `Failed to ${editingCampaign ? "update" : "save"} campaign`,
+          {
+            description: data.error,
+          }
+        );
       }
     } catch (error) {
-      console.error('Failed to save campaign:', error);
+      console.error("Failed to save campaign:", error);
       toast.dismiss(loadingToast);
-      toast.error('Failed to save campaign', {
-        description: 'An error occurred while saving your campaign.',
+      toast.error("Failed to save campaign", {
+        description: "An error occurred while saving your campaign.",
       });
     } finally {
       setSaving(false);
@@ -295,37 +314,40 @@ export default function Campaigns() {
   const handleSend = async (campaign: Campaign, scheduleAt?: string) => {
     setSending(true);
     const loadingToast = toast.loading(
-      scheduleAt ? 'Scheduling campaign...' : 'Starting campaign...', 
+      scheduleAt ? "Scheduling campaign..." : "Starting campaign...",
       {
-        description: 'Please wait while we process your email campaign.',
+        description: "Please wait while we process your email campaign.",
       }
     );
 
     try {
       const response = await fetch(`/api/campaigns/${campaign._id}/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scheduleAt }),
       });
 
       const data = await response.json();
       toast.dismiss(loadingToast);
-      
+
       if (data.success) {
-        toast.success(`Campaign ${scheduleAt ? 'scheduled' : 'started'} successfully!`, {
-          description: `Your campaign will be sent to ${data.recipientCount} recipients.`,
-        });
+        toast.success(
+          `Campaign ${scheduleAt ? "scheduled" : "started"} successfully!`,
+          {
+            description: `Your campaign will be sent to ${data.recipientCount} recipients.`,
+          }
+        );
         fetchCampaigns();
       } else {
-        toast.error('Campaign failed', {
+        toast.error("Campaign failed", {
           description: data.error,
         });
       }
     } catch (error) {
-      console.error('Failed to send campaign:', error);
+      console.error("Failed to send campaign:", error);
       toast.dismiss(loadingToast);
-      toast.error('Failed to send campaign', {
-        description: 'An error occurred while processing your campaign.',
+      toast.error("Failed to send campaign", {
+        description: "An error occurred while processing your campaign.",
       });
     } finally {
       setSending(false);
@@ -335,44 +357,64 @@ export default function Campaigns() {
   const handleDelete = async (campaignId: string) => {
     try {
       const response = await fetch(`/api/campaigns/${campaignId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Campaign deleted successfully!');
+        toast.success("Campaign deleted successfully!");
         fetchCampaigns();
       } else {
-        toast.error('Failed to delete campaign', {
+        toast.error("Failed to delete campaign", {
           description: data.error,
         });
       }
     } catch (error) {
-      console.error('Failed to delete campaign:', error);
-      toast.error('Failed to delete campaign');
+      console.error("Failed to delete campaign:", error);
+      toast.error("Failed to delete campaign");
     }
   };
 
   const getTotalRecipients = () => {
-    if (formData.recipients.includes('all')) {
+    if (formData.recipients.includes("all")) {
       return categories.reduce((sum, cat) => sum + cat.userCount, 0);
     }
     return formData.recipients
-      .filter(r => r.startsWith('category:'))
+      .filter((r) => r.startsWith("category:"))
       .reduce((sum, r) => {
-        const categoryName = r.replace('category:', '');
-        const category = categories.find(c => c.name === categoryName);
+        const categoryName = r.replace("category:", "");
+        const category = categories.find((c) => c.name === categoryName);
         return sum + (category?.userCount || 0);
       }, 0);
   };
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      draft: { variant: 'secondary' as const, icon: Edit, color: 'text-gray-600' },
-      scheduled: { variant: 'default' as const, icon: Calendar, color: 'text-blue-600' },
-      sending: { variant: 'default' as const, icon: Clock, color: 'text-orange-600' },
-      completed: { variant: 'default' as const, icon: CheckCircle2, color: 'text-green-600' },
-      failed: { variant: 'destructive' as const, icon: AlertTriangle, color: 'text-red-600' }
+      draft: {
+        variant: "secondary" as const,
+        icon: Edit,
+        color: "text-gray-600",
+      },
+      scheduled: {
+        variant: "default" as const,
+        icon: Calendar,
+        color: "text-blue-600",
+      },
+      sending: {
+        variant: "default" as const,
+        icon: Clock,
+        color: "text-orange-600",
+      },
+      completed: {
+        variant: "default" as const,
+        icon: CheckCircle2,
+        color: "text-green-600",
+      },
+      failed: {
+        variant: "destructive" as const,
+        icon: AlertTriangle,
+        color: "text-red-600",
+      },
     };
 
     const config = variants[status as keyof typeof variants] || variants.draft;
@@ -388,21 +430,24 @@ export default function Campaigns() {
 
   const getDeviceStyles = () => {
     switch (previewDevice) {
-      case 'mobile':
-        return 'max-w-sm mx-auto';
-      case 'tablet':
-        return 'max-w-2xl mx-auto';
-      case 'desktop':
+      case "mobile":
+        return "max-w-sm mx-auto";
+      case "tablet":
+        return "max-w-2xl mx-auto";
+      case "desktop":
       default:
-        return 'max-w-4xl mx-auto';
+        return "max-w-4xl mx-auto";
     }
   };
 
   const EmailPreview = () => {
-    const previewContent = formData.htmlContent || '<p>No content to preview</p>';
-    const previewSubject = formData.subject || 'No subject';
-    const selectedConfig = gmailConfigs.find(c => c._id === formData.gmailConfigId);
-    
+    const previewContent =
+      formData.htmlContent || "<p>No content to preview</p>";
+    const previewSubject = formData.subject || "No subject";
+    const selectedConfig = gmailConfigs.find(
+      (c) => c._id === formData.gmailConfigId
+    );
+
     return (
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
@@ -415,30 +460,30 @@ export default function Campaigns() {
               Preview how your email will appear to recipients
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             {/* Device Toggle */}
             <div className="flex items-center gap-2 justify-center">
               <Button
-                variant={previewDevice === 'desktop' ? 'default' : 'outline'}
+                variant={previewDevice === "desktop" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setPreviewDevice('desktop')}
+                onClick={() => setPreviewDevice("desktop")}
               >
                 <Monitor className="h-4 w-4 mr-1" />
                 Desktop
               </Button>
               <Button
-                variant={previewDevice === 'tablet' ? 'default' : 'outline'}
+                variant={previewDevice === "tablet" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setPreviewDevice('tablet')}
+                onClick={() => setPreviewDevice("tablet")}
               >
                 <Tablet className="h-4 w-4 mr-1" />
                 Tablet
               </Button>
               <Button
-                variant={previewDevice === 'mobile' ? 'default' : 'outline'}
+                variant={previewDevice === "mobile" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setPreviewDevice('mobile')}
+                onClick={() => setPreviewDevice("mobile")}
               >
                 <Smartphone className="h-4 w-4 mr-1" />
                 Mobile
@@ -454,12 +499,16 @@ export default function Campaigns() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium">From:</span>
                       <span className="text-muted-foreground">
-                        {selectedConfig ? `${selectedConfig.name} <${selectedConfig.email}>` : 'Select Gmail Config'}
+                        {selectedConfig
+                          ? `${selectedConfig.name} <${selectedConfig.email}>`
+                          : "Select Gmail Config"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium">Subject:</span>
-                      <span className="text-muted-foreground font-medium">{previewSubject}</span>
+                      <span className="text-muted-foreground font-medium">
+                        {previewSubject}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium">Recipients:</span>
@@ -472,13 +521,13 @@ export default function Campaigns() {
 
                 {/* Email Content */}
                 <div className="p-4 max-h-96 overflow-y-auto">
-                  <div 
+                  <div
                     className="prose prose-sm max-w-none email-preview-content"
                     dangerouslySetInnerHTML={{ __html: previewContent }}
                     style={{
-                      fontFamily: 'system-ui, -apple-system, sans-serif',
-                      lineHeight: '1.6',
-                      color: '#374151'
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                      lineHeight: "1.6",
+                      color: "#374151",
                     }}
                   />
                 </div>
@@ -486,7 +535,9 @@ export default function Campaigns() {
                 {/* Text Version Preview */}
                 {formData.textContent && (
                   <div className="border-t bg-gray-50 p-4">
-                    <div className="text-sm font-medium mb-2">Text Version:</div>
+                    <div className="text-sm font-medium mb-2">
+                      Text Version:
+                    </div>
                     <div className="text-sm text-muted-foreground whitespace-pre-wrap font-mono text-xs bg-white p-3 rounded border">
                       {formData.textContent}
                     </div>
@@ -497,8 +548,13 @@ export default function Campaigns() {
 
             {/* Preview Info */}
             <div className="text-center text-sm text-muted-foreground">
-              <p>This is a preview of how your email will appear to recipients.</p>
-              <p>Actual rendering may vary slightly depending on the email client.</p>
+              <p>
+                This is a preview of how your email will appear to recipients.
+              </p>
+              <p>
+                Actual rendering may vary slightly depending on the email
+                client.
+              </p>
             </div>
           </div>
         </DialogContent>
@@ -530,14 +586,33 @@ export default function Campaigns() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5" />
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Send className="h-5 w-5 text-white" />
+            </div>
             Email Campaigns
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Create, manage, and send professional email campaigns to your
+            audience
+          </p>
+        </div>
+      </div>
+
+      <Card className=" border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100 pb-6">
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Send className="h-4 w-4 text-white" />
+            </div>
+            Campaign Management
           </CardTitle>
-          <CardDescription>
-            Create, manage, and send professional email campaigns
+          <CardDescription className="text-base mt-2">
+            Create, edit, and send professional email campaigns with advanced
+            scheduling
           </CardDescription>
         </CardHeader>
 
@@ -546,7 +621,7 @@ export default function Campaigns() {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="list">Campaign List</TabsTrigger>
               <TabsTrigger value="create">
-                {editingCampaign ? 'Edit Campaign' : 'Create Campaign'}
+                {editingCampaign ? "Edit Campaign" : "Create Campaign"}
               </TabsTrigger>
             </TabsList>
 
@@ -563,8 +638,13 @@ export default function Campaigns() {
                     className="pl-10"
                   />
                 </div>
-                
-                <Select value={statusFilter || "all"} onValueChange={(value) => setStatusFilter(value === "all" ? "" : value)}>
+
+                <Select
+                  value={statusFilter || "all"}
+                  onValueChange={(value) =>
+                    setStatusFilter(value === "all" ? "" : value)
+                  }
+                >
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
@@ -578,7 +658,10 @@ export default function Campaigns() {
                   </SelectContent>
                 </Select>
 
-                <Button onClick={() => setActiveTab('create')} className="flex items-center gap-2">
+                <Button
+                  onClick={() => setActiveTab("create")}
+                  className="flex items-center gap-2"
+                >
                   <Plus className="h-4 w-4" />
                   New Campaign
                 </Button>
@@ -611,8 +694,12 @@ export default function Campaigns() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            <div className="font-medium">{campaign.gmailConfigId.name}</div>
-                            <div className="text-muted-foreground">{campaign.gmailConfigId.email}</div>
+                            <div className="font-medium">
+                              {campaign.gmailConfigId.name}
+                            </div>
+                            <div className="text-muted-foreground">
+                              {campaign.gmailConfigId.email}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -630,9 +717,13 @@ export default function Campaigns() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            <div className="text-green-600">Sent: {campaign.sentCount}</div>
+                            <div className="text-green-600">
+                              Sent: {campaign.sentCount}
+                            </div>
                             {campaign.failedCount > 0 && (
-                              <div className="text-red-600">Failed: {campaign.failedCount}</div>
+                              <div className="text-red-600">
+                                Failed: {campaign.failedCount}
+                              </div>
                             )}
                           </div>
                         </TableCell>
@@ -651,10 +742,10 @@ export default function Campaigns() {
                                   name: campaign.name,
                                   subject: campaign.subject,
                                   htmlContent: campaign.htmlContent,
-                                  textContent: campaign.textContent || '',
+                                  textContent: campaign.textContent || "",
                                   recipients: [],
                                   gmailConfigId: campaign.gmailConfigId._id,
-                                  scheduleAt: '',
+                                  scheduleAt: "",
                                 });
                                 setPreviewOpen(true);
                               }}
@@ -662,7 +753,7 @@ export default function Campaigns() {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            {campaign.status === 'draft' && (
+                            {campaign.status === "draft" && (
                               <>
                                 <Button
                                   variant="outline"
@@ -686,14 +777,20 @@ export default function Campaigns() {
                                   </AlertDialogTrigger>
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
-                                      <AlertDialogTitle>Send Campaign</AlertDialogTitle>
+                                      <AlertDialogTitle>
+                                        Send Campaign
+                                      </AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        Are you sure you want to send "{campaign.name}" to {campaign.recipients.length} recipients?
+                                        Are you sure you want to send &ldquo;
+                                        {campaign.name}&rdquo; to{" "}
+                                        {campaign.recipients.length} recipients?
                                         This action cannot be undone.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
                                       <AlertDialogAction
                                         onClick={() => handleSend(campaign)}
                                         className="bg-blue-600 hover:bg-blue-700"
@@ -715,15 +812,23 @@ export default function Campaigns() {
                                   </AlertDialogTrigger>
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
-                                      <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
+                                      <AlertDialogTitle>
+                                        Delete Campaign
+                                      </AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        Are you sure you want to delete "{campaign.name}"? This action cannot be undone.
+                                        Are you sure you want to delete &ldquo;
+                                        {campaign.name}&rdquo;? This action
+                                        cannot be undone.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
                                       <AlertDialogAction
-                                        onClick={() => handleDelete(campaign._id)}
+                                        onClick={() =>
+                                          handleDelete(campaign._id)
+                                        }
                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                       >
                                         Delete
@@ -733,7 +838,7 @@ export default function Campaigns() {
                                 </AlertDialog>
                               </>
                             )}
-                            {campaign.status !== 'draft' && (
+                            {campaign.status !== "draft" && (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -748,15 +853,17 @@ export default function Campaigns() {
                     ))}
                   </TableBody>
                 </Table>
-                
+
                 {campaigns.length === 0 && (
                   <div className="p-12 text-center">
                     <Send className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No campaigns found</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      No campaigns found
+                    </h3>
                     <p className="text-muted-foreground mb-4">
                       Create your first email campaign to get started
                     </p>
-                    <Button onClick={() => setActiveTab('create')}>
+                    <Button onClick={() => setActiveTab("create")}>
                       <Plus className="h-4 w-4 mr-2" />
                       Create Campaign
                     </Button>
@@ -774,7 +881,9 @@ export default function Campaigns() {
                       id="name"
                       type="text"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       placeholder="Newsletter - December 2024"
                       required
                     />
@@ -782,9 +891,11 @@ export default function Campaigns() {
 
                   <div className="space-y-2">
                     <Label htmlFor="gmailConfig">Gmail Configuration *</Label>
-                    <Select 
-                      value={formData.gmailConfigId} 
-                      onValueChange={(value) => setFormData({ ...formData, gmailConfigId: value })}
+                    <Select
+                      value={formData.gmailConfigId}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, gmailConfigId: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select Gmail Config" />
@@ -792,7 +903,8 @@ export default function Campaigns() {
                       <SelectContent>
                         {gmailConfigs.map((config) => (
                           <SelectItem key={config._id} value={config._id}>
-                            {config.name} ({config.email}) - {config.dailyLimit - config.sentToday} remaining
+                            {config.name} ({config.email}) -{" "}
+                            {config.dailyLimit - config.sentToday} remaining
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -806,7 +918,9 @@ export default function Campaigns() {
                     id="subject"
                     type="text"
                     value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subject: e.target.value })
+                    }
                     placeholder="Your amazing newsletter subject"
                     required
                   />
@@ -858,7 +972,11 @@ export default function Campaigns() {
                           setFormData({ ...formData, htmlContent: template });
                         }}
                         disabled={formData.htmlContent.length > 0}
-                        title={formData.htmlContent.length > 0 ? "Clear content first to use template" : "Use sample template"}
+                        title={
+                          formData.htmlContent.length > 0
+                            ? "Clear content first to use template"
+                            : "Use sample template"
+                        }
                       >
                         <FileText className="h-4 w-4 mr-1" />
                         Template
@@ -879,7 +997,9 @@ export default function Campaigns() {
                   <Textarea
                     id="htmlContent"
                     value={formData.htmlContent}
-                    onChange={(e) => setFormData({ ...formData, htmlContent: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, htmlContent: e.target.value })
+                    }
                     rows={10}
                     placeholder="<h1>Hello!</h1><p>Your HTML email content here...</p>"
                     required
@@ -891,7 +1011,9 @@ export default function Campaigns() {
                   <Textarea
                     id="textContent"
                     value={formData.textContent}
-                    onChange={(e) => setFormData({ ...formData, textContent: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, textContent: e.target.value })
+                    }
                     rows={5}
                     placeholder="Plain text version of your email..."
                   />
@@ -904,33 +1026,58 @@ export default function Campaigns() {
                       <input
                         type="checkbox"
                         id="all-users"
-                        checked={formData.recipients.includes('all')}
-                        onChange={(e) => handleRecipientChange('all', e.target.checked)}
+                        checked={formData.recipients.includes("all")}
+                        onChange={(e) =>
+                          handleRecipientChange("all", e.target.checked)
+                        }
                         className="rounded border-gray-300"
                       />
-                      <Label htmlFor="all-users" className="flex items-center gap-2">
+                      <Label
+                        htmlFor="all-users"
+                        className="flex items-center gap-2"
+                      >
                         <Users className="h-4 w-4" />
-                        All Users ({categories.reduce((sum, cat) => sum + cat.userCount, 0)} total)
+                        All Users (
+                        {categories.reduce(
+                          (sum, cat) => sum + cat.userCount,
+                          0
+                        )}{" "}
+                        total)
                       </Label>
                     </div>
-                    
+
                     {categories.map((category) => (
-                      <div key={category._id} className="flex items-center space-x-2">
+                      <div
+                        key={category._id}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="checkbox"
                           id={`category-${category._id}`}
-                          checked={formData.recipients.includes(`category:${category.name}`)}
-                          onChange={(e) => handleRecipientChange(`category:${category.name}`, e.target.checked)}
+                          checked={formData.recipients.includes(
+                            `category:${category.name}`
+                          )}
+                          onChange={(e) =>
+                            handleRecipientChange(
+                              `category:${category.name}`,
+                              e.target.checked
+                            )
+                          }
                           className="rounded border-gray-300"
                         />
-                        <Label htmlFor={`category-${category._id}`} className="flex items-center gap-2">
+                        <Label
+                          htmlFor={`category-${category._id}`}
+                          className="flex items-center gap-2"
+                        >
                           <Badge variant="secondary">{category.name}</Badge>
-                          <span className="text-muted-foreground">({category.userCount} users)</span>
+                          <span className="text-muted-foreground">
+                            ({category.userCount} users)
+                          </span>
                         </Label>
                       </div>
                     ))}
                   </div>
-                  
+
                   {formData.recipients.length > 0 && (
                     <Alert>
                       <CheckCircle2 className="h-4 w-4" />
@@ -942,7 +1089,11 @@ export default function Campaigns() {
                 </div>
 
                 <div className="flex gap-4">
-                  <Button type="submit" disabled={saving} className="flex items-center gap-2">
+                  <Button
+                    type="submit"
+                    disabled={saving}
+                    className="flex items-center gap-2"
+                  >
                     {saving ? (
                       <>
                         <Clock className="h-4 w-4 animate-spin" />
@@ -951,11 +1102,11 @@ export default function Campaigns() {
                     ) : (
                       <>
                         <CheckCircle2 className="h-4 w-4" />
-                        {editingCampaign ? 'Update Campaign' : 'Save Campaign'}
+                        {editingCampaign ? "Update Campaign" : "Save Campaign"}
                       </>
                     )}
                   </Button>
-                  
+
                   <Button type="button" variant="outline" onClick={resetForm}>
                     Cancel
                   </Button>
@@ -966,7 +1117,9 @@ export default function Campaigns() {
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    No active Gmail configurations found. Please add and activate at least one Gmail configuration to create campaigns.
+                    No active Gmail configurations found. Please add and
+                    activate at least one Gmail configuration to create
+                    campaigns.
                   </AlertDescription>
                 </Alert>
               )}

@@ -188,6 +188,25 @@ export default function EmailHistory() {
 
   return (
     <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <History className="h-5 w-5 text-white" />
+            </div>
+            Email History
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Track and analyze your email campaign performance
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="font-medium">{totalEmails.toLocaleString()} total emails</span>
+        </div>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>

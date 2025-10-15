@@ -17,7 +17,6 @@ export interface UserEmail {
     firstName?: string;
     lastName?: string;
     category: string;
-    tags: string[];
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
