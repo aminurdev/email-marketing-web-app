@@ -5,7 +5,7 @@ import UserEmail from '@/models/UserEmail';
 import EmailCampaign from '@/models/EmailCampaign';
 import EmailLog from '@/models/EmailLog';
 import { emailService } from '@/lib/nodemailer';
-import bcrypt from 'bcryptjs';
+
 
 export async function POST(request: NextRequest) {
     try {
@@ -117,8 +117,19 @@ export async function POST(request: NextRequest) {
 
 async function sendEmailsInBackground(
     campaignId: string,
-    gmailConfig: any,
-    recipients: any[]
+    gmailConfig: Record<string, unknown> & {
+        _id: string;
+        password: string;
+        name: string;
+        toObject: () => Record<string, unknown>;
+    },
+    recipients: Array<{
+        _id: string;
+        email: string;
+        firstName?: string;
+        lastName?: string;
+        category: string;
+    }>
 ) {
     try {
         // Initialize email service
@@ -127,7 +138,7 @@ async function sendEmailsInBackground(
         const configForService = {
             ...gmailConfig.toObject(),
             password: decryptedPassword
-        };
+        } as import('@/lib/types').GmailConfig;
 
         const initialized = await emailService.createTransporter(configForService);
         if (!initialized) {

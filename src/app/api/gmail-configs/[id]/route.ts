@@ -13,7 +13,7 @@ export async function PUT(
         const { name, email, password, dailyLimit, isActive } = body;
         const { id } = await params;
 
-        const updateData: any = { name, email, dailyLimit, isActive };
+        const updateData: Record<string, unknown> = { name, email, dailyLimit, isActive };
 
         if (password) {
             updateData.password = encrypt(password);
@@ -33,7 +33,7 @@ export async function PUT(
         }
 
         return NextResponse.json({ success: true, data: config });
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { success: false, error: 'Failed to update Gmail configuration' },
             { status: 500 }
@@ -58,7 +58,7 @@ export async function DELETE(
         }
 
         return NextResponse.json({ success: true, message: 'Configuration deleted' });
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { success: false, error: 'Failed to delete Gmail configuration' },
             { status: 500 }

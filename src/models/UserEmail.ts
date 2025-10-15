@@ -11,7 +11,6 @@ const UserEmailSchema = new mongoose.Schema<UserEmail>({
     timestamps: true
 });
 
-UserEmailSchema.index({ email: 1 });
 UserEmailSchema.index({ category: 1 });
 
 export default mongoose.models.UserEmail || mongoose.model<UserEmail>('UserEmail', UserEmailSchema);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,12 +67,7 @@ export default function UsersPage() {
   });
   const [addingUser, setAddingUser] = useState(false);
 
-  useEffect(() => {
-    fetchUsers();
-    fetchCategories();
-  }, [selectedCategory, searchTerm]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       if (selectedCategory) params.append('category', selectedCategory);
@@ -88,7 +83,12 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, searchTerm]);
+
+  useEffect(() => {
+    fetchUsers();
+    fetchCategories();
+  }, [fetchUsers]);
 
   const fetchCategories = async () => {
     try {

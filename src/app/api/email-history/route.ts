@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
         const dateTo = searchParams.get('dateTo');
 
         // Build query
-        let query: any = {};
+        const query: Record<string, unknown> = {};
 
         if (status) {
             query.status = status;
@@ -40,13 +40,14 @@ export async function GET(request: NextRequest) {
         }
 
         if (dateFrom || dateTo) {
-            query.sentAt = {};
+            const sentAtQuery: Record<string, Date> = {};
             if (dateFrom) {
-                query.sentAt.$gte = new Date(dateFrom);
+                sentAtQuery.$gte = new Date(dateFrom);
             }
             if (dateTo) {
-                query.sentAt.$lte = new Date(dateTo);
+                sentAtQuery.$lte = new Date(dateTo);
             }
+            query.sentAt = sentAtQuery;
         }
 
         const skip = (page - 1) * limit;

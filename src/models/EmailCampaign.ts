@@ -7,7 +7,7 @@ const EmailCampaignSchema = new mongoose.Schema<EmailCampaign>({
     htmlContent: { type: String, required: true },
     textContent: { type: String },
     recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserEmail' }],
-    gmailConfigId: { type: mongoose.Schema.Types.ObjectId, ref: 'GmailConfig', required: true },
+    gmailConfigId: { type: String, required: true },
     status: {
         type: String,
         enum: ['draft', 'scheduled', 'sending', 'completed', 'failed'],

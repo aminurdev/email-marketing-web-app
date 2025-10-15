@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +31,7 @@ import {
   Eye,
   MousePointer,
   Calendar,
-  User,
+
   Tag
 } from 'lucide-react';
 
@@ -81,17 +81,15 @@ export default function EmailHistory() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [categoryFilter] = useState('');
+  // Suppress unused variable warning
+  void categoryFilter;
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchEmailHistory();
-  }, [currentPage, statusFilter, categoryFilter, dateFrom, dateTo]);
-
-  const fetchEmailHistory = async () => {
+  const fetchEmailHistory = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       params.append('page', currentPage.toString());
@@ -116,7 +114,11 @@ export default function EmailHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, statusFilter, categoryFilter, searchTerm, dateFrom, dateTo]);
+
+  useEffect(() => {
+    fetchEmailHistory();
+  }, [fetchEmailHistory]);
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -153,7 +155,7 @@ export default function EmailHistory() {
     };
 
     return (
-      <Badge variant={variants[status as keyof typeof variants] as any} className="flex items-center gap-1">
+      <Badge variant={(variants[status as keyof typeof variants] || 'default') as 'default' | 'secondary' | 'destructive' | 'outline'} className="flex items-center gap-1">
         {getStatusIcon(status)}
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>

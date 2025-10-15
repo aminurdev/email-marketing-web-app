@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+
 import { ArrowLeft, Mail } from 'lucide-react';
 
 export default function DocsLayout({

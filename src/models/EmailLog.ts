@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { EmailLog } from '@/lib/types';
+
 
 const EmailLogSchema = new mongoose.Schema({
     campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'EmailCampaign' },

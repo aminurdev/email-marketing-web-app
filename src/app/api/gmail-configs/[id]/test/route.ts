@@ -135,17 +135,20 @@ This is an automated test email from your Email Campaign Manager.
                 );
             }
 
-        } catch (emailError: any) {
+        } catch (emailError: unknown) {
             console.error('Email sending error:', emailError);
 
             // Provide more specific error messages
             let errorMessage = 'Failed to send test email';
-            if (emailError.message?.includes('Invalid login')) {
-                errorMessage = 'Invalid Gmail credentials. Please check your email and app password.';
-            } else if (emailError.message?.includes('authentication')) {
-                errorMessage = 'Authentication failed. Make sure you\'re using an App Password, not your regular Gmail password.';
-            } else if (emailError.message?.includes('ENOTFOUND')) {
-                errorMessage = 'Network error. Please check your internet connection.';
+            if (emailError && typeof emailError === 'object' && 'message' in emailError) {
+                const message = emailError.message as string;
+                if (message.includes('Invalid login')) {
+                    errorMessage = 'Invalid Gmail credentials. Please check your email and app password.';
+                } else if (message.includes('authentication')) {
+                    errorMessage = 'Authentication failed. Make sure you\'re using an App Password, not your regular Gmail password.';
+                } else if (message.includes('ENOTFOUND')) {
+                    errorMessage = 'Network error. Please check your internet connection.';
+                }
             }
 
             return NextResponse.json(

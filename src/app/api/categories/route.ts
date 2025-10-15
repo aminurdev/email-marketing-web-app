@@ -8,7 +8,7 @@ export async function GET() {
         await connectDB();
         const categories = await Category.find({}).sort({ name: 1 });
         return NextResponse.json({ success: true, data: categories });
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { success: false, error: 'Failed to fetch categories' },
             { status: 500 }
@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
 
         await category.save();
         return NextResponse.json({ success: true, data: category }, { status: 201 });
-    } catch (error: any) {
-        if (error.code === 11000) {
+    } catch (error: unknown) {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
             return NextResponse.json(
                 { success: false, error: 'Category already exists' },
                 { status: 409 }

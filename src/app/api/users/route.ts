@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
         const limit = parseInt(searchParams.get('limit') || '50');
         const search = searchParams.get('search');
 
-        let query: any = {};
+        const query: Record<string, unknown> = {};
 
         if (category) {
             query.category = category;
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
                 pages: Math.ceil(total / limit)
             }
         });
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { success: false, error: 'Failed to fetch users' },
             { status: 500 }
@@ -82,8 +82,8 @@ export async function POST(request: NextRequest) {
         );
 
         return NextResponse.json({ success: true, data: user }, { status: 201 });
-    } catch (error: any) {
-        if (error.code === 11000) {
+    } catch (error: unknown) {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
             return NextResponse.json(
                 { success: false, error: 'Email already exists' },
                 { status: 409 }

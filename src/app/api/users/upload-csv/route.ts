@@ -27,10 +27,9 @@ export async function POST(request: NextRequest) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const results: any[] = [];
-        const errors: string[] = [];
+        const results: Record<string, unknown>[] = [];
 
-        return new Promise((resolve) => {
+        return new Promise<NextResponse>((resolve) => {
             const stream = Readable.from(buffer);
 
             stream
@@ -43,15 +42,15 @@ export async function POST(request: NextRequest) {
                     for (const row of results) {
                         try {
                             // Handle simplified CSV format: name, email
-                            const email = row.email || row.Email || row.EMAIL;
-                            const fullName = row.name || row.Name || row.NAME || '';
+                            const email = (row as Record<string, unknown>).email || (row as Record<string, unknown>).Email || (row as Record<string, unknown>).EMAIL;
+                            const fullName = String((row as Record<string, unknown>).name || (row as Record<string, unknown>).Name || (row as Record<string, unknown>).NAME || '');
 
                             // Split full name into first and last name
                             const nameParts = fullName.trim().split(' ');
                             const firstName = nameParts[0] || '';
                             const lastName = nameParts.slice(1).join(' ') || '';
 
-                            if (!email || !email.includes('@')) {
+                            if (!email || typeof email !== 'string' || !email.includes('@')) {
                                 skipped.push({ row, reason: 'Invalid email address' });
                                 continue;
                             }
@@ -69,7 +68,7 @@ export async function POST(request: NextRequest) {
                             }
 
                             const user = new UserEmail({
-                                email: email.trim().toLowerCase(),
+                                email: String(email).trim().toLowerCase(),
                                 firstName: firstName.trim(),
                                 lastName: lastName.trim(),
                                 category: defaultCategory,
@@ -86,8 +85,8 @@ export async function POST(request: NextRequest) {
                                 { upsert: true, setDefaultsOnInsert: true }
                             );
 
-                        } catch (error) {
-                            skipped.push({ row, reason: 'Processing error: ' + (error instanceof Error ? error.message : 'Unknown error') });
+                        } catch {
+                            skipped.push({ row, reason: 'Processing error: Unknown error' });
                         }
                     }
 
@@ -101,7 +100,7 @@ export async function POST(request: NextRequest) {
                         }
                     }));
                 })
-                .on('error', (error) => {
+                .on('error', () => {
                     resolve(NextResponse.json(
                         { success: false, error: 'Failed to parse CSV file' },
                         { status: 400 }
@@ -109,7 +108,7 @@ export async function POST(request: NextRequest) {
                 });
         });
 
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { success: false, error: 'Failed to process CSV upload' },
             { status: 500 }

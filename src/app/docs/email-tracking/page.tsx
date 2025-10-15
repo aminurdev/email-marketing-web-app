@@ -16,7 +16,7 @@ import {
   BarChart3,
   TrendingUp,
   Clock,
-  Users
+
 } from 'lucide-react';
 
 const trackingEvents = [

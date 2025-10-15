@@ -88,7 +88,7 @@ export async function PUT(
             }
         }
 
-        const updateData: any = {
+        const updateData: Record<string, unknown> = {
             name: name || campaign.name,
             subject: subject || campaign.subject,
             htmlContent: htmlContent || campaign.htmlContent,

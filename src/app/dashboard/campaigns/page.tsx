@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -46,14 +46,14 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Send,
   Calendar,
   Users,
-  Mail,
+
   AlertTriangle,
   CheckCircle2,
   Clock,
@@ -63,9 +63,9 @@ import {
   Eye,
   Copy,
   Play,
-  Pause,
+
   Search,
-  Filter,
+
   Monitor,
   Smartphone,
   Tablet,
@@ -114,7 +114,7 @@ export default function Campaigns() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [sending, setSending] = useState(false);
+  const [sending, setSending] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [activeTab, setActiveTab] = useState("list");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -132,11 +132,6 @@ export default function Campaigns() {
     gmailConfigId: "",
     scheduleAt: "",
   });
-
-  useEffect(() => {
-    fetchData();
-    fetchCampaigns();
-  }, []);
 
   const fetchData = async () => {
     try {
@@ -163,7 +158,7 @@ export default function Campaigns() {
     }
   };
 
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       if (statusFilter) params.append("status", statusFilter);
@@ -178,11 +173,16 @@ export default function Campaigns() {
     } catch (error) {
       console.error("Failed to fetch campaigns:", error);
     }
-  };
+  }, [searchTerm, statusFilter]);
+
+  useEffect(() => {
+    fetchData();
+    fetchCampaigns();
+  }, [fetchCampaigns]);
 
   useEffect(() => {
     fetchCampaigns();
-  }, [searchTerm, statusFilter]);
+  }, [fetchCampaigns]);
 
   const handleRecipientChange = (value: string, checked: boolean) => {
     if (checked) {

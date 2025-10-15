@@ -139,7 +139,7 @@ export default function GettingStartedPage() {
 
       {/* Step-by-step Guide */}
       <div className="space-y-6">
-        {steps.map((step, index) => {
+        {steps.map((step) => {
           const Icon = step.icon;
           return (
             <Card key={step.number} className="shadow-lg border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">

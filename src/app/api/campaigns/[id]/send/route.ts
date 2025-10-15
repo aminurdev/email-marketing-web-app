@@ -4,6 +4,7 @@ import EmailCampaign from '@/models/EmailCampaign';
 import GmailConfig from '@/models/GmailConfig';
 import { emailService } from '@/lib/nodemailer';
 import EmailLog from '@/models/EmailLog';
+import { GmailConfig as GmailConfigType } from '@/lib/types';
 
 export async function POST(
     request: NextRequest,
@@ -33,7 +34,15 @@ export async function POST(
             );
         }
 
-        const gmailConfig = campaign.gmailConfigId as any;
+        const gmailConfig = campaign.gmailConfigId as Record<string, unknown> & {
+            _id: string;
+            isActive: boolean;
+            sentToday: number;
+            dailyLimit: number;
+            name: string;
+            password: string;
+            toObject: () => Record<string, unknown>;
+        };
         if (!gmailConfig || !gmailConfig.isActive) {
             return NextResponse.json(
                 { success: false, error: 'Gmail configuration not found or inactive' },
@@ -50,7 +59,7 @@ export async function POST(
         }
 
         // Update campaign status
-        const updateData: any = {
+        const updateData: Record<string, unknown> = {
             status: scheduleAt ? 'scheduled' : 'sending',
             updatedAt: new Date()
         };
@@ -64,7 +73,12 @@ export async function POST(
         // If not scheduled, send immediately
         if (!scheduleAt) {
             // Start sending in background
-            sendEmailsInBackground(id, gmailConfig, campaign.recipients as any[], campaign);
+            sendEmailsInBackground(id, gmailConfig, campaign.recipients as Array<{
+                email: string;
+                firstName?: string;
+                lastName?: string;
+                category: string;
+            }>, campaign);
 
             return NextResponse.json({
                 success: true,
@@ -93,16 +107,33 @@ export async function POST(
 
 async function sendEmailsInBackground(
     campaignId: string,
-    gmailConfig: any,
-    recipients: any[],
-    campaign: any
+    gmailConfig: Record<string, unknown> & {
+        _id: string;
+        isActive: boolean;
+        sentToday: number;
+        dailyLimit: number;
+        name: string;
+        password: string;
+        toObject: () => Record<string, unknown>;
+    },
+    recipients: Array<{
+        email: string;
+        firstName?: string;
+        lastName?: string;
+        category: string;
+    }>,
+    campaign: Record<string, unknown> & {
+        subject: string;
+        htmlContent: string;
+        textContent?: string;
+    }
 ) {
     try {
         // Initialize email service
         const configForService = {
             ...gmailConfig.toObject(),
             password: gmailConfig.password // Use direct password (temporarily for debugging)
-        };
+        } as GmailConfigType;
 
         const initialized = await emailService.createTransporter(configForService);
         if (!initialized) {

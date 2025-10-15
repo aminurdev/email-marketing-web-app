@@ -11,10 +11,10 @@ interface MongooseCache {
     promise: Promise<typeof mongoose> | null;
 }
 
-let cached: MongooseCache = (global as any).mongoose;
+let cached: MongooseCache = (global as Record<string, unknown>).mongoose as MongooseCache;
 
 if (!cached) {
-    cached = (global as any).mongoose = { conn: null, promise: null };
+    cached = (global as Record<string, unknown>).mongoose = { conn: null, promise: null };
 }
 
 async function connectDB() {
