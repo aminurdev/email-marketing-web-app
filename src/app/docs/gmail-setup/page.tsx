@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import Link from 'next/link';
-import { 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import Link from "next/link";
+import {
   ArrowLeft,
   Settings,
   Shield,
@@ -15,8 +21,8 @@ import {
   Mail,
   Key,
   Clock,
-  Users
-} from 'lucide-react';
+  Users,
+} from "lucide-react";
 
 export default function GmailSetupPage() {
   return (
@@ -30,7 +36,9 @@ export default function GmailSetupPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gmail Setup Guide</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Gmail Setup Guide
+          </h1>
           <p className="text-muted-foreground mt-1">
             Configure Gmail accounts securely for email campaigns
           </p>
@@ -44,8 +52,9 @@ export default function GmailSetupPage() {
           <div className="space-y-2">
             <p className="font-medium">Important Security Notice</p>
             <p className="text-sm">
-              Never use your regular Gmail password. Always use App Passwords for third-party applications.
-              This guide will show you how to set this up securely.
+              Never use your regular Gmail password. Always use App Passwords
+              for third-party applications. This guide will show you how to set
+              this up securely.
             </p>
           </div>
         </AlertDescription>
@@ -73,28 +82,43 @@ export default function GmailSetupPage() {
               </h4>
               <ol className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
-                  <span>Go to your <strong>Google Account settings</strong></span>
+                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    1
+                  </span>
+                  <span>
+                    Go to your <strong>Google Account settings</strong>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
-                  <span>Click on <strong>"Security"</strong> in the left sidebar</span>
+                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    2
+                  </span>
+                  <span>
+                    Click on <strong>"Security"</strong> in the left sidebar
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
-                  <span>Under "Signing in to Google", click <strong>"2-Step Verification"</strong></span>
+                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    3
+                  </span>
+                  <span>
+                    Under "Signing in to Google", click{" "}
+                    <strong>"2-Step Verification"</strong>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+                  <span className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    4
+                  </span>
                   <span>Follow the setup wizard to enable 2FA</span>
                 </li>
               </ol>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold mb-3">Quick Link</h4>
-              <a 
-                href="https://myaccount.google.com/security" 
-                target="_blank" 
+              <a
+                href="https://myaccount.google.com/security"
+                target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button className="w-full justify-start">
@@ -132,20 +156,35 @@ export default function GmailSetupPage() {
               </h4>
               <ol className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
-                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
-                  <span>Go to <strong>Google App Passwords</strong> page</span>
+                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    1
+                  </span>
+                  <span>
+                    Go to <strong>Google App Passwords</strong> page
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
-                  <span>Select <strong>"Mail"</strong> as the app</span>
+                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    2
+                  </span>
+                  <span>
+                    Select <strong>"Mail"</strong> as the app
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    3
+                  </span>
                   <span>Choose your device or enter a custom name</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
-                  <span>Click <strong>"Generate"</strong> and copy the 16-character password</span>
+                  <span className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    4
+                  </span>
+                  <span>
+                    Click <strong>"Generate"</strong> and copy the 16-character
+                    password
+                  </span>
                 </li>
               </ol>
 
@@ -153,16 +192,23 @@ export default function GmailSetupPage() {
                 <Key className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800">
                   <p className="font-medium mb-1">App Password Format</p>
-                  <p className="text-sm">The password will look like: <code className="bg-white px-1 rounded">abcd efgh ijkl mnop</code></p>
-                  <p className="text-xs mt-1">You can remove the spaces when entering it in our system.</p>
+                  <p className="text-sm">
+                    The password will look like:{" "}
+                    <code className="bg-white px-1 rounded">
+                      abcd efgh ijkl mnop
+                    </code>
+                  </p>
+                  <p className="text-xs mt-1">
+                    You can remove the spaces when entering it in our system.
+                  </p>
                 </AlertDescription>
               </Alert>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold mb-3">Quick Link</h4>
-              <a 
-                href="https://myaccount.google.com/apppasswords" 
-                target="_blank" 
+              <a
+                href="https://myaccount.google.com/apppasswords"
+                target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button className="w-full justify-start">
@@ -201,19 +247,29 @@ export default function GmailSetupPage() {
               <div className="space-y-4">
                 <div className="p-3 border rounded-lg">
                   <p className="font-medium text-sm">Name</p>
-                  <p className="text-xs text-muted-foreground">A friendly name for this configuration (e.g., "Marketing Gmail")</p>
+                  <p className="text-xs text-muted-foreground">
+                    A friendly name for this configuration (e.g., "Marketing
+                    Gmail")
+                  </p>
                 </div>
                 <div className="p-3 border rounded-lg">
                   <p className="font-medium text-sm">Email</p>
-                  <p className="text-xs text-muted-foreground">Your Gmail address (e.g., your-email@gmail.com)</p>
+                  <p className="text-xs text-muted-foreground">
+                    Your Gmail address (e.g., your-email@gmail.com)
+                  </p>
                 </div>
                 <div className="p-3 border rounded-lg">
                   <p className="font-medium text-sm">App Password</p>
-                  <p className="text-xs text-muted-foreground">The 16-character password from step 2 (spaces will be removed automatically)</p>
+                  <p className="text-xs text-muted-foreground">
+                    The 16-character password from step 2 (spaces will be
+                    removed automatically)
+                  </p>
                 </div>
                 <div className="p-3 border rounded-lg">
                   <p className="font-medium text-sm">Daily Limit</p>
-                  <p className="text-xs text-muted-foreground">Maximum emails per day (recommended: 500 or less)</p>
+                  <p className="text-xs text-muted-foreground">
+                    Maximum emails per day (recommended: 500 or less)
+                  </p>
                 </div>
               </div>
             </div>
@@ -262,7 +318,9 @@ export default function GmailSetupPage() {
                 </div>
                 <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <div>
-                    <p className="font-medium text-blue-800">Established Account</p>
+                    <p className="font-medium text-blue-800">
+                      Established Account
+                    </p>
                     <p className="text-xs text-blue-600">After 30 days</p>
                   </div>
                   <Badge className="bg-blue-600">300-500/day</Badge>
@@ -318,29 +376,47 @@ export default function GmailSetupPage() {
         <CardContent className="p-6">
           <div className="space-y-4">
             <div className="p-4 border-l-4 border-red-500 bg-red-50">
-              <h4 className="font-semibold text-red-800 mb-1">"Username and Password not accepted"</h4>
-              <p className="text-sm text-red-700 mb-2">This usually means you're using your regular Gmail password instead of an App Password.</p>
+              <h4 className="font-semibold text-red-800 mb-1">
+                "Username and Password not accepted"
+              </h4>
+              <p className="text-sm text-red-700 mb-2">
+                This usually means you're using your regular Gmail password
+                instead of an App Password.
+              </p>
               <ul className="text-xs text-red-600 space-y-1 ml-4">
                 <li>• Make sure 2FA is enabled on your Gmail account</li>
-                <li>• Use the 16-character App Password, not your regular password</li>
-                <li>• Remove all spaces from the App Password</li>
+                <li>
+                  • Use the 16-character App Password, not your regular password
+                </li>
                 <li>• Try generating a new App Password</li>
               </ul>
             </div>
-            
+
             <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50">
-              <h4 className="font-semibold text-yellow-800 mb-1">"Daily limit exceeded"</h4>
-              <p className="text-sm text-yellow-700 mb-2">You've reached your daily sending limit for this Gmail account.</p>
+              <h4 className="font-semibold text-yellow-800 mb-1">
+                "Daily limit exceeded"
+              </h4>
+              <p className="text-sm text-yellow-700 mb-2">
+                You've reached your daily sending limit for this Gmail account.
+              </p>
               <ul className="text-xs text-yellow-600 space-y-1 ml-4">
-                <li>• Wait until the next day (limits reset at midnight GMT)</li>
+                <li>
+                  • Wait until the next day (limits reset at midnight GMT)
+                </li>
                 <li>• Add additional Gmail accounts to increase capacity</li>
-                <li>• Lower your daily limit to avoid hitting Gmail's restrictions</li>
+                <li>
+                  • Lower your daily limit to avoid hitting Gmail's restrictions
+                </li>
               </ul>
             </div>
 
             <div className="p-4 border-l-4 border-blue-500 bg-blue-50">
-              <h4 className="font-semibold text-blue-800 mb-1">"Connection timeout"</h4>
-              <p className="text-sm text-blue-700 mb-2">Network or server connectivity issues.</p>
+              <h4 className="font-semibold text-blue-800 mb-1">
+                "Connection timeout"
+              </h4>
+              <p className="text-sm text-blue-700 mb-2">
+                Network or server connectivity issues.
+              </p>
               <ul className="text-xs text-blue-600 space-y-1 ml-4">
                 <li>• Check your internet connection</li>
                 <li>• Try testing the configuration again</li>
@@ -356,7 +432,8 @@ export default function GmailSetupPage() {
         <CardContent className="p-6 text-center">
           <h3 className="text-xl font-semibold mb-2">Ready to Send Emails?</h3>
           <p className="text-muted-foreground mb-6">
-            Now that your Gmail is configured, you can start importing users and creating campaigns.
+            Now that your Gmail is configured, you can start importing users and
+            creating campaigns.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/docs/user-management">

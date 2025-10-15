@@ -114,7 +114,7 @@ export default function Campaigns() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [sending, setSending] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [sending, setSending] = useState(false);
   const [activeTab, setActiveTab] = useState("list");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -440,28 +440,35 @@ export default function Campaigns() {
     }
   };
 
+  const [previewData, setPreviewData] = useState({
+    subject: "",
+    htmlContent: "",
+    textContent: "",
+    gmailConfigId: "",
+  });
+
   const EmailPreview = () => {
     const previewContent =
-      formData.htmlContent || "<p>No content to preview</p>";
-    const previewSubject = formData.subject || "No subject";
+      previewData.htmlContent || "<p>No content to preview</p>";
+    const previewSubject = previewData.subject || "No subject";
     const selectedConfig = gmailConfigs.find(
-      (c) => c._id === formData.gmailConfigId
+      (c) => c._id === previewData.gmailConfigId
     );
 
     return (
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+      <AlertDialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <AlertDialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5" />
               Email Preview
-            </DialogTitle>
-            <DialogDescription>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Preview how your email will appear to recipients
-            </DialogDescription>
-          </DialogHeader>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto">
             {/* Device Toggle */}
             <div className="flex items-center gap-2 justify-center">
               <Button
@@ -533,13 +540,13 @@ export default function Campaigns() {
                 </div>
 
                 {/* Text Version Preview */}
-                {formData.textContent && (
+                {previewData.textContent && (
                   <div className="border-t bg-gray-50 p-4">
                     <div className="text-sm font-medium mb-2">
                       Text Version:
                     </div>
                     <div className="text-sm text-muted-foreground whitespace-pre-wrap font-mono text-xs bg-white p-3 rounded border">
-                      {formData.textContent}
+                      {previewData.textContent}
                     </div>
                   </div>
                 )}
@@ -557,30 +564,94 @@ export default function Campaigns() {
               </p>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close Preview</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     );
   };
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-muted rounded w-1/4"></div>
-            <div className="h-3 bg-muted rounded w-1/3"></div>
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl animate-pulse"></div>
+              <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg w-64 animate-pulse"></div>
+            </div>
+            <div className="h-4 bg-gray-200 rounded w-80 animate-pulse"></div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-16 bg-muted rounded"></div>
+        </div>
+
+        {/* Main Content Skeleton */}
+        <Card className="border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-b border-gray-100 pb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg animate-pulse"></div>
+              <div className="space-y-2">
+                <div className="h-5 bg-gray-200 rounded w-48 animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded w-64 animate-pulse"></div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-6">
+            {/* Tabs Skeleton */}
+            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
+              <div className="flex-1 h-10 bg-gray-200 rounded-md animate-pulse"></div>
+              <div className="flex-1 h-10 bg-gray-200 rounded-md animate-pulse"></div>
+            </div>
+
+            {/* Filters Skeleton */}
+            <div className="flex gap-4 items-center mb-6">
+              <div className="flex-1 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-[150px] h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+            </div>
+
+            {/* Table Skeleton */}
+            <div className="rounded-md border">
+              <div className="p-4 border-b bg-gray-50">
+                <div className="grid grid-cols-7 gap-4">
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                  ))}
+                </div>
+              </div>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="p-4 border-b">
+                  <div className="grid grid-cols-7 gap-4 items-center">
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                    </div>
+                    <div className="h-6 bg-gray-200 rounded-full w-20 animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                    <div className="space-y-1">
+                      <div className="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
+                      <div className="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
+                    </div>
+                    <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                    <div className="flex gap-2">
+                      {[...Array(4)].map((_, j) => (
+                        <div key={j} className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -738,14 +809,11 @@ export default function Campaigns() {
                               variant="outline"
                               size="sm"
                               onClick={() => {
-                                setFormData({
-                                  name: campaign.name,
+                                setPreviewData({
                                   subject: campaign.subject,
                                   htmlContent: campaign.htmlContent,
                                   textContent: campaign.textContent || "",
-                                  recipients: [],
                                   gmailConfigId: campaign.gmailConfigId._id,
-                                  scheduleAt: "",
                                 });
                                 setPreviewOpen(true);
                               }}
@@ -985,7 +1053,15 @@ export default function Campaigns() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setPreviewOpen(true)}
+                        onClick={() => {
+                          setPreviewData({
+                            subject: formData.subject,
+                            htmlContent: formData.htmlContent,
+                            textContent: formData.textContent,
+                            gmailConfigId: formData.gmailConfigId,
+                          });
+                          setPreviewOpen(true);
+                        }}
                         disabled={!formData.htmlContent && !formData.subject}
                         className="flex items-center gap-2"
                       >

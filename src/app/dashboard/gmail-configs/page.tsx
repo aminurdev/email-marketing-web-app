@@ -319,20 +319,6 @@ export default function GmailConfigs() {
               </div>
             </div>
           </div>
-
-          <Alert className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-            <AlertCircle className="h-4 w-4 text-yellow-600" />
-            <AlertDescription className="text-yellow-800">
-              <strong>Troubleshooting:</strong> If you get &ldquo;Username and
-              Password not accepted&ldquo; error:
-              <br />• Make sure 2FA is enabled on your Gmail account
-              <br />• Use the 16-character App Password, not your regular Gmail
-              password
-              <br />• Remove all spaces from the App Password
-              <br />• Try generating a new App Password if the current one
-              doesn&lsquo;t work
-            </AlertDescription>
-          </Alert>
         </CardContent>
       </Card>
 

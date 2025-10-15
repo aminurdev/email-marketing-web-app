@@ -30,8 +30,20 @@ import {
   CheckCircle,
   AlertCircle,
   Plus,
-  Loader2
+  Loader2,
+  Trash2
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
 
 interface User {
@@ -66,6 +78,8 @@ export default function UsersPage() {
     category: ''
   });
   const [addingUser, setAddingUser] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -215,6 +229,96 @@ Bob Wilson,bob.wilson@example.com`;
     toast.success('Template downloaded', {
       description: 'CSV template has been downloaded to your computer.',
     });
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    const loadingToast = toast.loading("Deleting user...", {
+      description: "Please wait while we delete the user.",
+    });
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+      toast.dismiss(loadingToast);
+
+      if (data.success) {
+        fetchUsers();
+        fetchCategories();
+        toast.success("User deleted successfully!", {
+          description: `${userName} has been removed.`,
+        });
+      } else {
+        toast.error("Failed to delete user", {
+          description: data.error,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      toast.dismiss(loadingToast);
+      toast.error("Failed to delete user", {
+        description: "An error occurred while deleting the user.",
+      });
+    }
+  };
+
+  const handleSelectUser = (userId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedUsers(users.map(user => user._id));
+    } else {
+      setSelectedUsers([]);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedUsers.length === 0) return;
+
+    setDeleting(true);
+    const loadingToast = toast.loading(`Deleting ${selectedUsers.length} users...`, {
+      description: "Please wait while we delete the selected users.",
+    });
+
+    try {
+      const response = await fetch('/api/users/bulk-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userIds: selectedUsers }),
+      });
+
+      const data = await response.json();
+      toast.dismiss(loadingToast);
+
+      if (data.success) {
+        setSelectedUsers([]);
+        fetchUsers();
+        fetchCategories();
+        toast.success("Users deleted successfully!", {
+          description: `${selectedUsers.length} users have been removed.`,
+        });
+      } else {
+        toast.error("Failed to delete users", {
+          description: data.error,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to bulk delete users:", error);
+      toast.dismiss(loadingToast);
+      toast.error("Failed to delete users", {
+        description: "An error occurred while deleting the users.",
+      });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -546,6 +650,74 @@ Bob Wilson,bob.wilson@example.com`;
             </div>
           )}
 
+          {/* Bulk Actions */}
+          {selectedUsers.length > 0 && (
+            <div className="mb-6">
+              <Card className="border-blue-200 shadow-md">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                        {selectedUsers.length} selected
+                      </Badge>
+                      <span className="text-sm text-blue-700">
+                        {selectedUsers.length === 1 ? '1 user selected' : `${selectedUsers.length} users selected`}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedUsers([])}
+                      >
+                        Clear Selection
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            disabled={deleting}
+                          >
+                            {deleting ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Deleting...
+                              </>
+                            ) : (
+                              <>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete Selected
+                              </>
+                            )}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Selected Users</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete {selectedUsers.length} selected users? 
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleBulkDelete}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete Users
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {/* Search and Filter */}
           <div className="mb-6">
             <Card className="shadow-sm border-gray-200">
@@ -591,10 +763,19 @@ Bob Wilson,bob.wilson@example.com`;
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50 border-b border-gray-200 h-12">
+                      <TableHead className="w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.length === users.length && users.length > 0}
+                          onChange={(e) => handleSelectAll(e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                      </TableHead>
                       <TableHead className="font-semibold text-gray-900">User</TableHead>
                       <TableHead className="font-semibold text-gray-900">Category</TableHead>
                       <TableHead className="font-semibold text-gray-900">Status</TableHead>
                       <TableHead className="font-semibold text-gray-900">Created</TableHead>
+                      <TableHead className="font-semibold text-gray-900 w-20">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -603,6 +784,14 @@ Bob Wilson,bob.wilson@example.com`;
                         key={user._id} 
                         className="hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100"
                       >
+                        <TableCell>
+                          <input
+                            type="checkbox"
+                            checked={selectedUsers.includes(user._id)}
+                            onChange={(e) => handleSelectUser(user._id, e.target.checked)}
+                            className="rounded border-gray-300"
+                          />
+                        </TableCell>
                         <TableCell className="py-3">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
@@ -657,11 +846,49 @@ Bob Wilson,bob.wilson@example.com`;
                             })}
                           </div>
                         </TableCell>
+                        <TableCell>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{user.firstName || user.lastName 
+                                    ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+                                    : user.email
+                                  }"? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteUser(
+                                    user._id, 
+                                    user.firstName || user.lastName 
+                                      ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+                                      : user.email
+                                  )}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Delete User
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
                       </TableRow>
                     ))}
                     {users.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={4} className="py-12">
+                        <TableCell colSpan={6} className="py-12">
                           <div className="text-center">
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                               <Users className="h-6 w-6 text-gray-400" />
