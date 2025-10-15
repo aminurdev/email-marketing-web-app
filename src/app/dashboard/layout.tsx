@@ -38,13 +38,13 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden"
+                className="lg:hidden p-2 h-9 w-9"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
                 {sidebarOpen ? (
@@ -53,12 +53,12 @@ export default function DashboardLayout({
                   <Menu className="h-5 w-5" />
                 )}
               </Button>
-              <div className="flex items-center">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg mr-3">
-                  <Mail className="h-5 w-5 text-white" />
+              <div className="flex items-center min-w-0">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-1.5 sm:p-2 rounded-lg mr-2 sm:mr-3 flex-shrink-0">
+                  <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <div className="min-w-0">
+                  <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
                     Email Campaign Manager
                   </h1>
                   <p className="text-xs text-muted-foreground hidden sm:block">
@@ -68,17 +68,18 @@ export default function DashboardLayout({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                System Online
+                <span className="hidden md:inline">System Online</span>
+                <span className="md:hidden">Online</span>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className=" px-4 sm:px-6 lg:px-8">
+      <div className="px-3 sm:px-4 lg:px-8">
         <div className="flex">
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
@@ -91,8 +92,8 @@ export default function DashboardLayout({
           {/* Sidebar */}
           <aside
             className={`
-            fixed lg:sticky top-16 z-50 h-[calc(100vh-4rem)]
-            w-64 transform transition-transform duration-300 ease-in-out
+            fixed lg:sticky top-14 sm:top-16 z-50 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]
+            w-72 sm:w-64 transform transition-transform duration-300 ease-in-out
             lg:transform-none lg:transition-none
             ${
               sidebarOpen
@@ -101,10 +102,10 @@ export default function DashboardLayout({
             }
           `}
           >
-            <div className="h-full py-6 pr-6">
+            <div className="h-full py-4 sm:py-6 pr-3 sm:pr-6">
               <Card className="h-full shadow-lg border-0 bg-gradient-to-b from-white to-gray-50/50">
-                <div className="p-6 h-full flex flex-col">
-                  <nav className="space-y-2">
+                <div className="p-4 sm:p-6 h-full flex flex-col">
+                  <nav className="space-y-1 sm:space-y-2">
                     {navigation.map((item) => {
                       const isActive = pathname === item.href;
                       const Icon = item.icon;
@@ -115,8 +116,9 @@ export default function DashboardLayout({
                           href={item.href}
                           onClick={() => setSidebarOpen(false)}
                           className={`
-                            group flex items-center px-4 py-3 rounded-xl text-sm font-medium 
+                            group flex items-center px-3 sm:px-4 py-3 sm:py-3 rounded-xl text-sm font-medium 
                             transition-all duration-200 ease-in-out transform hover:scale-[1.02]
+                            touch-manipulation min-h-[44px]
                             ${
                               isActive
                                 ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25"
@@ -126,7 +128,7 @@ export default function DashboardLayout({
                         >
                           <Icon
                             className={`
-                            h-5 w-5 mr-3 transition-transform duration-200
+                            h-5 w-5 mr-3 transition-transform duration-200 flex-shrink-0
                             ${
                               isActive
                                 ? "text-white"
@@ -135,19 +137,19 @@ export default function DashboardLayout({
                             group-hover:scale-110
                           `}
                           />
-                          <span className="font-medium">{item.name}</span>
+                          <span className="font-medium truncate">{item.name}</span>
                           {isActive && (
-                            <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+                            <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse flex-shrink-0" />
                           )}
                         </Link>
                       );
                     })}
                   </nav>
 
-                  <Separator className="my-6" />
+                  <Separator className="my-4 sm:my-6" />
 
-                  <div className="mt-auto pt-6">
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-100">
+                  <div className="mt-auto pt-4 sm:pt-6">
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 sm:p-4 rounded-xl border border-blue-100">
                       <div className="text-sm font-medium text-gray-900 mb-1">
                         Need Help?
                       </div>
@@ -158,7 +160,7 @@ export default function DashboardLayout({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="w-full text-xs"
+                          className="w-full text-xs min-h-[36px] touch-manipulation"
                         >
                           View Docs
                         </Button>
@@ -171,7 +173,7 @@ export default function DashboardLayout({
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 py-6 lg:pl-6 transition-all duration-300 ease-in-out">
+          <main className="flex-1 py-4 sm:py-6 lg:pl-6 transition-all duration-300 ease-in-out">
             <div className="max-w-none">{children}</div>
           </main>
         </div>

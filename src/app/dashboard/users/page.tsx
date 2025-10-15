@@ -371,24 +371,25 @@ Bob Wilson,bob.wilson@example.com`;
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Users className="h-5 w-5 text-white" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            User Management
+            <span className="truncate">User Management</span>
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
+          <p className="text-muted-foreground mt-1 sm:mt-2 text-base sm:text-lg">
             Manage your email recipients and import from CSV files
           </p>
         </div>
         <Button 
           onClick={() => setShowUpload(!showUpload)}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 text-base"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base touch-manipulation min-h-[44px] flex-shrink-0"
         >
-          <Upload className="h-5 w-5 mr-2" />
-          Upload CSV
+          <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+          <span className="hidden sm:inline">Upload CSV</span>
+          <span className="sm:hidden">Upload</span>
         </Button>
       </div>
 
@@ -413,9 +414,9 @@ Bob Wilson,bob.wilson@example.com`;
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           {/* User Management Actions */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* Add Single User */}
             <Card className="border-green-200 shadow-lg overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-green-50/50 to-emerald-50/50 border-b border-green-100">
@@ -429,7 +430,7 @@ Bob Wilson,bob.wilson@example.com`;
                   Quickly add a single user to your database
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <form onSubmit={handleAddUser} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="userName" className="text-sm font-medium">Full Name *</Label>
@@ -471,11 +472,11 @@ Bob Wilson,bob.wilson@example.com`;
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex gap-3 pt-2">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                     <Button 
                       type="submit" 
                       disabled={addingUser}
-                      className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200"
+                      className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200 touch-manipulation min-h-[44px]"
                     >
                       {addingUser ? (
                         <>
@@ -493,6 +494,7 @@ Bob Wilson,bob.wilson@example.com`;
                       type="button" 
                       variant="outline" 
                       onClick={() => setNewUser({ name: '', email: '', category: '' })}
+                      className="touch-manipulation min-h-[44px] sm:w-auto"
                     >
                       Clear
                     </Button>
@@ -514,29 +516,31 @@ Bob Wilson,bob.wilson@example.com`;
                   Import multiple users from a CSV file
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="space-y-4">
-                  <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50/50">
-                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                  <div className="text-center py-6 sm:py-8 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50/50">
+                    <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3" />
                     <p className="text-sm text-gray-600 mb-2">
                       Upload a CSV file with name and email columns
                     </p>
                     <p className="text-xs text-gray-500 mb-4">
                       Format: name,email (with headers)
                     </p>
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={downloadTemplate}
+                        className="touch-manipulation min-h-[40px]"
                       >
                         <FileText className="h-4 w-4 mr-1" />
-                        Download Template
+                        <span className="hidden sm:inline">Download Template</span>
+                        <span className="sm:hidden">Template</span>
                       </Button>
                       <Button
                         onClick={() => setShowUpload(true)}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation min-h-[40px]"
                         size="sm"
                       >
                         <Upload className="h-4 w-4 mr-1" />
@@ -719,10 +723,10 @@ Bob Wilson,bob.wilson@example.com`;
           )}
 
           {/* Search and Filter */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Card className="shadow-sm border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row gap-4">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
@@ -730,11 +734,11 @@ Bob Wilson,bob.wilson@example.com`;
                       placeholder="Search users by name or email..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-10 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                      className="pl-10 h-10 sm:h-10 border-gray-200 focus:border-blue-300 focus:ring-blue-200 touch-manipulation"
                     />
                   </div>
                   <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
-                    <SelectTrigger className="w-full sm:w-[200px] h-10 border-gray-200">
+                    <SelectTrigger className="w-full sm:w-[200px] h-10 border-gray-200 touch-manipulation">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>

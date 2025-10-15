@@ -84,19 +84,36 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <Card>
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6">
             <div className="animate-pulse">
-              <div className="h-4 bg-muted rounded w-1/4 mb-2"></div>
-              <div className="h-3 bg-muted rounded w-1/3"></div>
+              <div className="h-6 sm:h-8 bg-muted rounded w-1/2 sm:w-1/4 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-2/3 sm:w-1/3"></div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-20 sm:h-24 bg-muted rounded-xl"></div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="p-4 sm:p-6">
+            <div className="animate-pulse">
+              <div className="h-6 bg-muted rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="h-20 bg-muted rounded"></div>
+                  <div className="h-24 sm:h-28 bg-muted rounded-xl"></div>
                 </div>
               ))}
             </div>
@@ -174,19 +191,19 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <LayoutDashboard className="h-5 w-5 text-white" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+              <LayoutDashboard className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            Dashboard Overview
+            <span className="truncate">Dashboard Overview</span>
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
+          <p className="text-muted-foreground mt-1 sm:mt-2 text-base sm:text-lg">
             Monitor your email campaigns and system performance
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground flex-shrink-0">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span className="font-medium">All Systems Operational</span>
         </div>
@@ -204,28 +221,28 @@ export default function Dashboard() {
             Your email campaign statistics at a glance
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <CardContent className="p-4 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
             {statCards.map((stat) => {
               const Icon = stat.icon;
               return (
                 <div
                   key={stat.title}
-                  className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+                  className="bg-white p-4 sm:p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] touch-manipulation"
                 >
                   <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-2xl font-bold text-gray-900 mb-1">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                         {stat.value.toLocaleString()}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-xs sm:text-sm text-muted-foreground truncate">
                         {stat.title}
                       </div>
                     </div>
                     <div
-                      className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 ${stat.bgColor} rounded-xl flex items-center justify-center flex-shrink-0 ml-2`}
                     >
-                      <Icon className={`h-6 w-6 ${stat.color}`} />
+                      <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
                     </div>
                   </div>
                 </div>
@@ -247,29 +264,29 @@ export default function Dashboard() {
             Get started with common tasks and workflows
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CardContent className="p-4 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Link key={action.title} href={action.href}>
-                  <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.02] border-0 bg-white">
-                    <CardContent className="p-6">
+                  <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.02] border-0 bg-white touch-manipulation">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center mb-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center mr-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center mr-3 flex-shrink-0">
                               <Icon className="h-5 w-5 text-blue-600" />
                             </div>
-                            <h3 className="font-semibold text-gray-900">
+                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                               {action.title}
                             </h3>
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             {action.description}
                           </p>
                         </div>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground mt-2" />
+                        <ArrowRight className="h-4 w-4 text-muted-foreground mt-2 flex-shrink-0" />
                       </div>
                     </CardContent>
                   </Card>
