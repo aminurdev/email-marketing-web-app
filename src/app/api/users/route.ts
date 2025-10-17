@@ -74,9 +74,9 @@ export async function POST(request: NextRequest) {
 
         await user.save();
 
-        // Update category user count
+        // Update category user count (only for active categories)
         await Category.findOneAndUpdate(
-            { name: category },
+            { name: category, status: { $ne: 'deleted' } },
             { $inc: { userCount: 1 } },
             { upsert: true }
         );

@@ -81,9 +81,9 @@ export async function POST(request: NextRequest) {
                             await user.save();
                             processed.push(user);
 
-                            // Update category count
+                            // Update category count (only for active categories)
                             await Category.findOneAndUpdate(
-                                { name: defaultCategory },
+                                { name: defaultCategory, status: { $ne: 'deleted' } },
                                 { $inc: { userCount: 1 } },
                                 { upsert: true, setDefaultsOnInsert: true }
                             );

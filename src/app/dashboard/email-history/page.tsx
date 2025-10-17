@@ -105,12 +105,41 @@ export default function EmailHistory() {
       const data = await response.json();
       
       if (data.success) {
-        setLogs(data.data);
-        setStats(data.stats);
-        setTotalPages(data.pagination.pages);
+        setLogs(data.data || []);
+        setStats(data.stats || {
+          sent: 0,
+          failed: 0,
+          bounced: 0,
+          delivered: 0,
+          opened: 0,
+          clicked: 0
+        });
+        setTotalPages(data.pagination?.pages || 1);
+      } else {
+        setLogs([]);
+        setStats({
+          sent: 0,
+          failed: 0,
+          bounced: 0,
+          delivered: 0,
+          opened: 0,
+          clicked: 0
+        });
+        setTotalPages(1);
+        console.error('Failed to fetch email history:', data.error);
       }
     } catch (error) {
       console.error('Failed to fetch email history:', error);
+      setLogs([]);
+      setStats({
+        sent: 0,
+        failed: 0,
+        bounced: 0,
+        delivered: 0,
+        opened: 0,
+        clicked: 0
+      });
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }

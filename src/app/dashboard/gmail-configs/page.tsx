@@ -153,23 +153,39 @@ export default function GmailConfigs() {
   };
 
   const deleteConfig = async (id: string) => {
+    const loadingToast = toast.loading("Deleting configuration...", {
+      description: "Please wait while we delete the Gmail configuration.",
+    });
+
     try {
       const response = await fetch(`/api/gmail-configs/${id}`, {
         method: "DELETE",
       });
 
       const data = await response.json();
+      toast.dismiss(loadingToast);
+
       if (data.success) {
+        // Remove the deleted config from the UI
         setConfigs(configs.filter((config) => config._id !== id));
-        toast.success("Configuration deleted successfully!");
+        toast.success("Configuration deleted successfully!", {
+          description: "The Gmail configuration has been marked as deleted and removed from your list.",
+        });
       } else {
-        toast.error("Failed to delete configuration");
+        toast.error("Failed to delete configuration", {
+          description: data.error || "An error occurred while deleting the configuration.",
+        });
       }
     } catch (error) {
       console.error("Failed to delete config:", error);
-      toast.error("Failed to delete configuration");
+      toast.dismiss(loadingToast);
+      toast.error("Failed to delete configuration", {
+        description: "A network error occurred while deleting the configuration.",
+      });
     }
   };
+
+
 
   const testConfig = async (id: string) => {
     if (!testEmail || !testEmail.includes("@")) {
@@ -615,8 +631,7 @@ export default function GmailConfigs() {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               Are you sure you want to delete &ldquo;
-                              {config.name}&rdquo;? This action cannot be
-                              undone.
+                              {config.name}&rdquo;? The configuration will be marked as deleted and removed from your list, but the data will be preserved for audit purposes.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

@@ -368,36 +368,7 @@ Bob Wilson,bob.wilson@example.com`;
     }
   };
 
-  const handleMigration = async () => {
-    const loadingToast = toast.loading("Running database migration...", {
-      description: "Updating database indexes to allow same email in different categories.",
-    });
 
-    try {
-      const response = await fetch('/api/migrate-users', {
-        method: 'POST',
-      });
-
-      const data = await response.json();
-      toast.dismiss(loadingToast);
-
-      if (data.success) {
-        toast.success("Migration completed successfully!", {
-          description: data.message,
-        });
-      } else {
-        toast.error("Migration failed", {
-          description: data.error,
-        });
-      }
-    } catch (error) {
-      console.error("Migration failed:", error);
-      toast.dismiss(loadingToast);
-      toast.error("Migration failed", {
-        description: "An error occurred while running the migration.",
-      });
-    }
-  };
 
   if (loading) {
     return (
@@ -461,25 +432,14 @@ Bob Wilson,bob.wilson@example.com`;
             Manage your email recipients and import from CSV files
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            onClick={handleMigration}
-            variant="outline"
-            className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm touch-manipulation min-h-[44px] flex-shrink-0"
-            title="Fix database to allow same email in different categories"
-          >
-            <span className="hidden sm:inline">Fix DB</span>
-            <span className="sm:hidden">Fix</span>
-          </Button>
-          <Button 
-            onClick={() => setShowUpload(!showUpload)}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base touch-manipulation min-h-[44px] flex-shrink-0"
-          >
-            <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            <span className="hidden sm:inline">Upload CSV</span>
-            <span className="sm:hidden">Upload</span>
-          </Button>
-        </div>
+        <Button 
+          onClick={() => setShowUpload(!showUpload)}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base touch-manipulation min-h-[44px] flex-shrink-0"
+        >
+          <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+          <span className="hidden sm:inline">Upload CSV</span>
+          <span className="sm:hidden">Upload</span>
+        </Button>
       </div>
 
       <Card className="border-0 bg-gradient-to-b from-white to-gray-50/50 overflow-hidden">

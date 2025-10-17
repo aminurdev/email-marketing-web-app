@@ -63,6 +63,7 @@ import {
   Smartphone,
   Tablet,
   FileText,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -108,6 +109,9 @@ export default function Campaigns() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
+  
+  // Store active polling intervals for cleanup
+  const [activePollingIntervals, setActivePollingIntervals] = useState<NodeJS.Timeout[]>([]);
   const [activeTab, setActiveTab] = useState("list");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -139,23 +143,42 @@ export default function Campaigns() {
       ]);
 
       if (configs.success) {
-        const activeConfigs = configs.data.filter((c: GmailConfig) => c.isActive);
+        const configData = configs.data || [];
+        const activeConfigs = configData.filter((c: GmailConfig) => c.isActive);
         
         // If no active configs, show all configs with a warning
-        if (activeConfigs.length === 0 && configs.data.length > 0) {
-          setGmailConfigs(configs.data);
+        if (activeConfigs.length === 0 && configData.length > 0) {
+          setGmailConfigs(configData);
           toast.warning('No active Gmail configurations', {
             description: 'Showing all configurations. Please activate at least one in Gmail Configs page.',
+          });
+        } else if (activeConfigs.length === 0) {
+          setGmailConfigs([]);
+          toast.warning('No Gmail configurations found', {
+            description: 'Please add Gmail configurations in the Gmail Configs page to create campaigns.',
           });
         } else {
           setGmailConfigs(activeConfigs);
         }
+      } else {
+        setGmailConfigs([]);
+        toast.error("Failed to load Gmail configurations", {
+          description: configs.error || "Could not load Gmail configurations.",
+        });
       }
+      
       if (categories.success) {
-        setCategories(categories.data);
+        setCategories(categories.data || []);
+      } else {
+        setCategories([]);
+        toast.error("Failed to load categories", {
+          description: categories.error || "Could not load categories.",
+        });
       }
     } catch (error) {
       console.error("Failed to fetch data:", error);
+      setGmailConfigs([]);
+      setCategories([]);
       toast.error("Failed to load data", {
         description: "Could not load Gmail configurations and categories. Please refresh the page.",
       });
@@ -174,10 +197,17 @@ export default function Campaigns() {
       const data = await response.json();
 
       if (data.success) {
-        setCampaigns(data.data);
+        setCampaigns(data.data || []);
+      } else {
+        setCampaigns([]);
+        console.error("Failed to fetch campaigns:", data.error);
       }
     } catch (error) {
       console.error("Failed to fetch campaigns:", error);
+      setCampaigns([]);
+      toast.error("Failed to load campaigns", {
+        description: "Could not load campaigns. Please refresh the page.",
+      });
     }
   }, [searchTerm, statusFilter]);
 
@@ -189,6 +219,13 @@ export default function Campaigns() {
   useEffect(() => {
     fetchCampaigns();
   }, [fetchCampaigns]);
+
+  // Cleanup polling intervals on unmount
+  useEffect(() => {
+    return () => {
+      activePollingIntervals.forEach(interval => clearInterval(interval));
+    };
+  }, [activePollingIntervals]);
 
   const handleRecipientChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -253,11 +290,26 @@ export default function Campaigns() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (gmailConfigs.length === 0) {
+      toast.error("No Gmail configurations", {
+        description: "Please add at least one Gmail configuration before creating a campaign.",
+      });
+      return;
+    }
+    
+    if (categories.length === 0) {
+      toast.error("No categories found", {
+        description: "Please add categories and users before creating a campaign.",
+      });
+      return;
+    }
+    
     if (
       !formData.name ||
       !formData.subject ||
       !formData.htmlContent ||
-      !formData.gmailConfigId
+      !formData.gmailConfigId ||
+      formData.gmailConfigId === "no-configs"
     ) {
       toast.error("Missing required fields", {
         description:
@@ -346,7 +398,62 @@ export default function Campaigns() {
             description: `Your campaign will be sent to ${data.recipientCount} recipients.`,
           }
         );
+        
+        // Immediately refresh to show "sending" status
         fetchCampaigns();
+        
+        // If not scheduled, poll for status updates during sending
+        if (!scheduleAt) {
+          const pollInterval = setInterval(async () => {
+            try {
+              const statusResponse = await fetch(`/api/campaigns/${campaign._id}`);
+              const statusData = await statusResponse.json();
+              
+              if (statusData.success) {
+                const updatedCampaign = statusData.data;
+                
+                // Update the campaign in the list
+                setCampaigns(prevCampaigns => 
+                  prevCampaigns.map(c => 
+                    c._id === campaign._id ? updatedCampaign : c
+                  )
+                );
+                
+                // Stop polling when campaign is completed or failed
+                if (updatedCampaign.status === 'completed' || updatedCampaign.status === 'failed') {
+                  clearInterval(pollInterval);
+                  
+                  // Remove from active intervals
+                  setActivePollingIntervals(prev => prev.filter(interval => interval !== pollInterval));
+                  
+                  // Show completion notification
+                  if (updatedCampaign.status === 'completed') {
+                    toast.success("Campaign completed!", {
+                      description: `Sent: ${updatedCampaign.sentCount}, Failed: ${updatedCampaign.failedCount}`,
+                    });
+                  } else {
+                    toast.error("Campaign failed", {
+                      description: "The campaign encountered errors during sending.",
+                    });
+                  }
+                }
+              }
+            } catch (error) {
+              console.error("Failed to poll campaign status:", error);
+              clearInterval(pollInterval);
+              setActivePollingIntervals(prev => prev.filter(interval => interval !== pollInterval));
+            }
+          }, 3000); // Poll every 3 seconds
+          
+          // Add to active intervals for cleanup
+          setActivePollingIntervals(prev => [...prev, pollInterval]);
+          
+          // Stop polling after 10 minutes as a safety measure
+          setTimeout(() => {
+            clearInterval(pollInterval);
+            setActivePollingIntervals(prev => prev.filter(interval => interval !== pollInterval));
+          }, 600000);
+        }
       } else {
         toast.error("Campaign failed", {
           description: data.error,
@@ -385,8 +492,12 @@ export default function Campaigns() {
   };
 
   const getTotalRecipients = () => {
+    if (!categories || categories.length === 0) {
+      return 0;
+    }
+    
     if (formData.recipients.includes("all")) {
-      return categories.reduce((sum, cat) => sum + cat.userCount, 0);
+      return categories.reduce((sum, cat) => sum + (cat.userCount || 0), 0);
     }
     return formData.recipients
       .filter((r) => r.startsWith("category:"))
@@ -411,8 +522,8 @@ export default function Campaigns() {
       },
       sending: {
         variant: "default" as const,
-        icon: Clock,
-        color: "text-orange-600",
+        icon: Loader2,
+        color: "text-orange-600 animate-spin",
       },
       completed: {
         variant: "default" as const,
@@ -762,7 +873,33 @@ export default function Campaigns() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {campaigns.map((campaign) => (
+                    {campaigns.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-12">
+                          <div className="flex flex-col items-center gap-4">
+                            <Send className="h-12 w-12 text-muted-foreground" />
+                            <div>
+                              <h3 className="text-lg font-semibold mb-2">No campaigns found</h3>
+                              <p className="text-muted-foreground mb-4">
+                                {gmailConfigs.length === 0 
+                                  ? "Add Gmail configurations first, then create your first email campaign"
+                                  : categories.length === 0
+                                  ? "Add categories and users first, then create your first email campaign"
+                                  : "Create your first email campaign to get started"
+                                }
+                              </p>
+                              {gmailConfigs.length > 0 && categories.length > 0 && (
+                                <Button onClick={() => setActiveTab("create")} className="flex items-center gap-2">
+                                  <Plus className="h-4 w-4" />
+                                  Create Campaign
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      campaigns.map((campaign) => (
                       <TableRow key={campaign._id}>
                         <TableCell>
                           <div>
@@ -927,7 +1064,7 @@ export default function Campaigns() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )))}
                   </TableBody>
                 </Table>
 
@@ -950,6 +1087,25 @@ export default function Campaigns() {
             </TabsContent>
 
             <TabsContent value="create" className="space-y-6">
+              {(gmailConfigs.length === 0 || categories.length === 0) && (
+                <Alert className="border-orange-200 bg-orange-50">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-orange-800">
+                    <div className="space-y-2">
+                      <p className="font-medium">Setup Required</p>
+                      <div className="text-sm">
+                        {gmailConfigs.length === 0 && (
+                          <p>• No Gmail configurations found. Please add at least one in the Gmail Configs page.</p>
+                        )}
+                        {categories.length === 0 && (
+                          <p>• No categories with users found. Please add categories and users first.</p>
+                        )}
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <form onSubmit={handleSave} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -987,7 +1143,7 @@ export default function Campaigns() {
                             </SelectItem>
                           ))
                         ) : (
-                          <SelectItem value="" disabled>
+                          <SelectItem value="no-configs" disabled>
                             No Gmail configurations available
                           </SelectItem>
                         )}

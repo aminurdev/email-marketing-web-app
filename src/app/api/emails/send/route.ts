@@ -28,11 +28,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Get Gmail configuration
-        const gmailConfig = await GmailConfig.findById(gmailConfigId);
+        // Get Gmail configuration (only active, non-deleted configs)
+        const gmailConfig = await GmailConfig.findOne({
+            _id: gmailConfigId,
+            status: { $ne: 'deleted' }
+        });
+
         if (!gmailConfig || !gmailConfig.isActive) {
             return NextResponse.json(
-                { success: false, error: 'Gmail configuration not found or inactive' },
+                { success: false, error: 'Gmail configuration not found, inactive, or has been deleted' },
                 { status: 404 }
             );
         }

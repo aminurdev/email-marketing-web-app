@@ -179,20 +179,21 @@ export default function Categories() {
       toast.dismiss(loadingToast);
 
       if (data.success) {
+        // Remove the deleted category from the UI
         setCategories(categories.filter(cat => cat._id !== categoryId));
         toast.success("Category deleted successfully!", {
-          description: `"${categoryName}" category has been removed.`,
+          description: `"${categoryName}" has been marked as deleted and removed from your list.`,
         });
       } else {
         toast.error("Failed to delete category", {
-          description: data.error,
+          description: data.error || "An error occurred while deleting the category.",
         });
       }
     } catch (error) {
       console.error("Failed to delete category:", error);
       toast.dismiss(loadingToast);
       toast.error("Failed to delete category", {
-        description: "An error occurred while deleting the category.",
+        description: "A network error occurred while deleting the category.",
       });
     }
   };
@@ -565,10 +566,10 @@ export default function Categories() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Category</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{category.name}"? This action cannot be undone.
+                                Are you sure you want to delete "{category.name}"? The category will be marked as deleted and removed from your list, but the data will be preserved for audit purposes.
                                 {category.userCount > 0 && (
                                   <span className="block mt-2 text-red-600 font-medium">
-                                    Warning: This category contains {category.userCount} users. They will need to be reassigned to other categories.
+                                    Warning: This category contains {category.userCount} users. They will need to be reassigned to other categories before deletion.
                                   </span>
                                 )}
                               </AlertDialogDescription>

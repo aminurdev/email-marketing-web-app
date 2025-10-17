@@ -37,15 +37,17 @@ export async function POST(
         const gmailConfig = campaign.gmailConfigId as Record<string, unknown> & {
             _id: string;
             isActive: boolean;
+            status: string;
             sentToday: number;
             dailyLimit: number;
             name: string;
             password: string;
             toObject: () => Record<string, unknown>;
         };
-        if (!gmailConfig || !gmailConfig.isActive) {
+
+        if (!gmailConfig || !gmailConfig.isActive || gmailConfig.status === 'deleted') {
             return NextResponse.json(
-                { success: false, error: 'Gmail configuration not found or inactive' },
+                { success: false, error: 'Gmail configuration not found, inactive, or has been deleted' },
                 { status: 404 }
             );
         }

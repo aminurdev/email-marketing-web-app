@@ -14,6 +14,7 @@ import {
   Settings,
   Menu,
   X,
+  Database,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Categories", href: "/dashboard/categories", icon: Tags },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: Send },
   { name: "Email History", href: "/dashboard/email-history", icon: Mail },
+  { name: "Database", href: "/dashboard/database", icon: Database },
 ];
 
 export default function DashboardLayout({

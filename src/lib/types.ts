@@ -4,6 +4,7 @@ export interface GmailConfig {
     email: string;
     password: string; // App password
     isActive: boolean;
+    status: 'active' | 'deleted';
     dailyLimit: number;
     sentToday: number;
     lastResetDate: Date;
@@ -68,6 +69,7 @@ export interface Category {
     name: string;
     description?: string;
     color: string;
+    status: 'active' | 'deleted';
     userCount: number;
     createdAt: Date;
 }

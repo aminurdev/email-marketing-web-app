@@ -81,18 +81,25 @@ export async function GET(request: NextRequest) {
             clicked: 0
         };
 
-        stats.forEach(stat => {
-            statusStats[stat._id as keyof typeof statusStats] = stat.count;
-        });
+        if (stats && Array.isArray(stats)) {
+            stats.forEach(stat => {
+                if (stat && stat._id && typeof stat.count === 'number') {
+                    const statusKey = stat._id as keyof typeof statusStats;
+                    if (statusKey in statusStats) {
+                        statusStats[statusKey] = stat.count;
+                    }
+                }
+            });
+        }
 
         return NextResponse.json({
             success: true,
-            data: logs,
+            data: logs || [],
             pagination: {
                 page,
                 limit,
-                total,
-                pages: Math.ceil(total / limit)
+                total: total || 0,
+                pages: Math.ceil((total || 0) / limit) || 1
             },
             stats: statusStats
         });

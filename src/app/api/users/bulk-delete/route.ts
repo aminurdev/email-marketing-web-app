@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
         // Delete all users
         const deleteResult = await UserEmail.deleteMany({ _id: { $in: userIds } });
 
-        // Update category user counts
+        // Update category user counts (only for active categories)
         const updatePromises = Object.entries(categoryCount).map(([categoryName, count]) =>
             Category.findOneAndUpdate(
-                { name: categoryName },
+                { name: categoryName, status: { $ne: 'deleted' } },
                 { $inc: { userCount: -count } }
             )
         );

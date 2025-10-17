@@ -23,9 +23,9 @@ export async function DELETE(
         // Delete the user
         await UserEmail.findByIdAndDelete(id);
 
-        // Update category user count
+        // Update category user count (only for active categories)
         await Category.findOneAndUpdate(
-            { name: user.category },
+            { name: user.category, status: { $ne: 'deleted' } },
             { $inc: { userCount: -1 } }
         );
 

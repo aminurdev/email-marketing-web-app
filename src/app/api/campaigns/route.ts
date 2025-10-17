@@ -38,12 +38,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: campaigns,
+      data: campaigns || [],
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit),
+        total: total || 0,
+        pages: Math.ceil((total || 0) / limit) || 1,
       },
     });
   } catch (error) {

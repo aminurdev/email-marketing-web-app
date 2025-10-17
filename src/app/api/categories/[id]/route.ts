@@ -20,11 +20,15 @@ export async function PUT(
             );
         }
 
-        // Find the current category
-        const currentCategory = await Category.findById(id);
+        // Find the current category (only active categories)
+        const currentCategory = await Category.findOne({
+            _id: id,
+            status: { $ne: 'deleted' }
+        });
+
         if (!currentCategory) {
             return NextResponse.json(
-                { success: false, error: 'Category not found' },
+                { success: false, error: 'Category not found or has been deleted' },
                 { status: 404 }
             );
         }
@@ -73,11 +77,15 @@ export async function DELETE(
         await connectDB();
         const { id } = await params;
 
-        // Find the category first
-        const category = await Category.findById(id);
+        // Find the category first (only active categories)
+        const category = await Category.findOne({
+            _id: id,
+            status: { $ne: 'deleted' }
+        });
+
         if (!category) {
             return NextResponse.json(
-                { success: false, error: 'Category not found' },
+                { success: false, error: 'Category not found or has been deleted' },
                 { status: 404 }
             );
         }
@@ -94,12 +102,17 @@ export async function DELETE(
             );
         }
 
-        // Delete the category
-        await Category.findByIdAndDelete(id);
+        // Soft delete: set status to 'deleted' instead of removing the record
+        const updatedCategory = await Category.findByIdAndUpdate(
+            id,
+            { status: 'deleted' },
+            { new: true }
+        );
 
         return NextResponse.json({
             success: true,
-            message: 'Category deleted successfully'
+            message: 'Category deleted successfully',
+            data: updatedCategory
         });
     } catch (error) {
         console.error('Failed to delete category:', error);

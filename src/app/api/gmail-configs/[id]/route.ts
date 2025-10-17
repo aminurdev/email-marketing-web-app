@@ -48,7 +48,16 @@ export async function DELETE(
     try {
         await connectDB();
         const { id } = await params;
-        const config = await GmailConfig.findByIdAndDelete(id);
+
+        // Soft delete: set status to 'deleted' instead of removing the record
+        const config = await GmailConfig.findByIdAndUpdate(
+            id,
+            {
+                status: 'deleted',
+                isActive: false // Also deactivate when deleting
+            },
+            { new: true }
+        ).select('-password');
 
         if (!config) {
             return NextResponse.json(
@@ -57,7 +66,11 @@ export async function DELETE(
             );
         }
 
-        return NextResponse.json({ success: true, message: 'Configuration deleted' });
+        return NextResponse.json({
+            success: true,
+            message: 'Configuration deleted successfully',
+            data: config
+        });
     } catch {
         return NextResponse.json(
             { success: false, error: 'Failed to delete Gmail configuration' },

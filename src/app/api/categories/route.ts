@@ -6,7 +6,18 @@ import UserEmail from '@/models/UserEmail';
 export async function GET() {
     try {
         await connectDB();
-        const categories = await Category.find({}).sort({ name: 1 });
+
+        // Update any categories that don't have status field
+        await Category.updateMany(
+            { status: { $exists: false } },
+            { $set: { status: 'active' } }
+        );
+
+        // Only return categories that are not deleted
+        const categories = await Category.find({
+            status: { $ne: 'deleted' }
+        }).sort({ name: 1 });
+
         return NextResponse.json({ success: true, data: categories });
     } catch {
         return NextResponse.json(
