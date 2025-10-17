@@ -6,9 +6,18 @@ import GmailConfig from '@/models/GmailConfig';
 export async function GET() {
     try {
         await connectDB();
+
+        // First, update any configs that don't have isActive field
+        await GmailConfig.updateMany(
+            { isActive: { $exists: false } },
+            { $set: { isActive: true } }
+        );
+
         const configs = await GmailConfig.find({}).select('-password');
+
         return NextResponse.json({ success: true, data: configs });
-    } catch {
+    } catch (error) {
+        console.error('Failed to fetch Gmail configurations:', error);
         return NextResponse.json(
             { success: false, error: 'Failed to fetch Gmail configurations' },
             { status: 500 }
@@ -36,6 +45,7 @@ export async function POST(request: NextRequest) {
             email,
             password: password, // Temporarily plain text
             dailyLimit,
+            isActive: true, // Explicitly set to true when creating
         });
 
         await config.save();

@@ -139,13 +139,26 @@ export default function Campaigns() {
       ]);
 
       if (configs.success) {
-        setGmailConfigs(configs.data.filter((c: GmailConfig) => c.isActive));
+        const activeConfigs = configs.data.filter((c: GmailConfig) => c.isActive);
+        
+        // If no active configs, show all configs with a warning
+        if (activeConfigs.length === 0 && configs.data.length > 0) {
+          setGmailConfigs(configs.data);
+          toast.warning('No active Gmail configurations', {
+            description: 'Showing all configurations. Please activate at least one in Gmail Configs page.',
+          });
+        } else {
+          setGmailConfigs(activeConfigs);
+        }
       }
       if (categories.success) {
         setCategories(categories.data);
       }
     } catch (error) {
       console.error("Failed to fetch data:", error);
+      toast.error("Failed to load data", {
+        description: "Could not load Gmail configurations and categories. Please refresh the page.",
+      });
     } finally {
       setLoading(false);
     }
@@ -239,6 +252,7 @@ export default function Campaigns() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (
       !formData.name ||
       !formData.subject ||
@@ -265,6 +279,8 @@ export default function Campaigns() {
         ? `/api/campaigns/${editingCampaign._id}`
         : "/api/campaigns";
       const method = editingCampaign ? "PUT" : "POST";
+
+
 
       const response = await fetch(url, {
         method,
@@ -958,16 +974,23 @@ export default function Campaigns() {
                         setFormData({ ...formData, gmailConfigId: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className={!formData.gmailConfigId ? "border-red-300" : ""}>
                         <SelectValue placeholder="Select Gmail Config" />
                       </SelectTrigger>
                       <SelectContent>
-                        {gmailConfigs.map((config) => (
-                          <SelectItem key={config._id} value={config._id}>
-                            {config.name} ({config.email}) -{" "}
-                            {config.dailyLimit - config.sentToday} remaining
+                        {gmailConfigs.length > 0 ? (
+                          gmailConfigs.map((config) => (
+                            <SelectItem key={config._id} value={config._id}>
+                              {config.name} ({config.email}) -{" "}
+                              {config.dailyLimit - config.sentToday} remaining
+                              {!config.isActive && " (Inactive)"}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="" disabled>
+                            No Gmail configurations available
                           </SelectItem>
-                        ))}
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -1185,10 +1208,25 @@ export default function Campaigns() {
               {gmailConfigs.length === 0 && (
                 <Alert>
                   <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    No active Gmail configurations found. Please add and
-                    activate at least one Gmail configuration to create
-                    campaigns.
+                  <AlertDescription className="flex items-center justify-between">
+                    <span>
+                      No Gmail configurations found. Please{" "}
+                      <a 
+                        href="/dashboard/gmail-configs" 
+                        className="text-blue-600 hover:text-blue-800 underline"
+                      >
+                        add at least one Gmail configuration
+                      </a>{" "}
+                      to create campaigns.
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={fetchData}
+                      className="ml-4"
+                    >
+                      Refresh
+                    </Button>
                   </AlertDescription>
                 </Alert>
               )}

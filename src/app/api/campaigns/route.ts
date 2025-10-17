@@ -69,6 +69,8 @@ export async function POST(request: NextRequest) {
       scheduledAt,
     } = body;
 
+
+
     if (!name || !subject || !htmlContent || !gmailConfigId) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },

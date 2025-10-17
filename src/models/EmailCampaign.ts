@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
-import { EmailCampaign } from '@/lib/types';
 
-const EmailCampaignSchema = new mongoose.Schema<EmailCampaign>({
+const EmailCampaignSchema = new mongoose.Schema({
     name: { type: String, required: true },
     subject: { type: String, required: true },
     htmlContent: { type: String, required: true },
     textContent: { type: String },
     recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserEmail' }],
-    gmailConfigId: { type: String, required: true },
+    gmailConfigId: { type: mongoose.Schema.Types.ObjectId, ref: 'GmailConfig', required: true },
     status: {
         type: String,
         enum: ['draft', 'scheduled', 'sending', 'completed', 'failed'],
@@ -20,4 +19,4 @@ const EmailCampaignSchema = new mongoose.Schema<EmailCampaign>({
     timestamps: true
 });
 
-export default mongoose.models.EmailCampaign || mongoose.model<EmailCampaign>('EmailCampaign', EmailCampaignSchema);
+export default mongoose.models.EmailCampaign || mongoose.model('EmailCampaign', EmailCampaignSchema);

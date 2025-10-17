@@ -27,7 +27,7 @@ export interface EmailCampaign {
     name: string;
     subject: string;
     htmlContent: string;
-    textContent: string;
+    textContent?: string;
     recipients: string[]; // User email IDs
     gmailConfigId: string;
     status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed';
