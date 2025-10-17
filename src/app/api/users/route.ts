@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     } catch (error: unknown) {
         if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
             return NextResponse.json(
-                { success: false, error: 'Email already exists' },
+                { success: false, error: 'User with this email already exists in this category' },
                 { status: 409 }
             );
         }

@@ -21,14 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { 
   Tags, 
   Plus, 
@@ -53,13 +46,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { toast } from "sonner";
 
 interface Category {
@@ -71,15 +58,7 @@ interface Category {
   createdAt: string;
 }
 
-interface User {
-  _id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  category: string;
-  isActive: boolean;
-  createdAt: string;
-}
+
 
 export default function Categories() {
   const router = useRouter();
@@ -88,10 +67,7 @@ export default function Categories() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [showUsersDialog, setShowUsersDialog] = useState(false);
-  const [selectedCategoryUsers, setSelectedCategoryUsers] = useState<User[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -225,32 +201,7 @@ export default function Categories() {
     router.push(`/dashboard/users?category=${encodeURIComponent(categoryName)}`);
   };
 
-  // Keep the original function for potential future use (modal view)
-  // const fetchCategoryUsers = async (category: Category) => {
-  //   setSelectedCategory(category);
-  //   setLoadingUsers(true);
-  //   setShowUsersDialog(true);
 
-  //   try {
-  //     const response = await fetch(`/api/users?category=${encodeURIComponent(category.name)}`);
-  //     const data = await response.json();
-      
-  //     if (data.success) {
-  //       setSelectedCategoryUsers(data.data);
-  //     } else {
-  //       toast.error("Failed to fetch users", {
-  //         description: data.error,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch category users:", error);
-  //     toast.error("Failed to fetch users", {
-  //       description: "An error occurred while fetching users.",
-  //     });
-  //   } finally {
-  //     setLoadingUsers(false);
-  //   }
-  // };
 
   const colorOptions = [
     { value: "#3B82F6", name: "Blue", class: "bg-blue-500" },
@@ -712,336 +663,9 @@ export default function Categories() {
         </CardContent>
       </Card>
 
-      {/* Users Dialog */}
-      <Dialog open={showUsersDialog} onOpenChange={setShowUsersDialog}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Users in "{selectedCategory?.name}" Category
-            </DialogTitle>
-            <DialogDescription>
-              Manage users in this category. You can delete individual users or select multiple users for bulk operations.
-            </DialogDescription>
-          </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto">
-            {loadingUsers ? (
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg animate-pulse">
-                    <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-300 rounded w-1/3"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                    <div className="w-20 h-6 bg-gray-300 rounded"></div>
-                  </div>
-                ))}
-              </div>
-            ) : selectedCategoryUsers.length > 0 ? (
-              <CategoryUsersTable 
-                users={selectedCategoryUsers}
-                onUsersUpdate={(updatedUsers) => {
-                  setSelectedCategoryUsers(updatedUsers);
-                  // Update the category user count
-                  if (selectedCategory) {
-                    setCategories(categories.map(cat => 
-                      cat._id === selectedCategory._id 
-                        ? { ...cat, userCount: updatedUsers.length }
-                        : cat
-                    ));
-                  }
-                }}
-              />
-            ) : (
-              <div className="text-center py-12">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No users found</h3>
-                <p className="text-gray-500">
-                  This category doesn't have any users yet.
-                </p>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
 
-// Category Users Table Component
-function CategoryUsersTable({ 
-  users, 
-  onUsersUpdate 
-}: { 
-  users: User[];
-  onUsersUpdate: (users: User[]) => void;
-}) {
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [deleting, setDeleting] = useState(false);
 
-  const handleSelectUser = (userId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedUsers([...selectedUsers, userId]);
-    } else {
-      setSelectedUsers(selectedUsers.filter(id => id !== userId));
-    }
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedUsers(users.map(user => user._id));
-    } else {
-      setSelectedUsers([]);
-    }
-  };
-
-  const handleDeleteUser = async (userId: string, userName: string) => {
-    const loadingToast = toast.loading("Deleting user...", {
-      description: "Please wait while we delete the user.",
-    });
-
-    try {
-      const response = await fetch(`/api/users/${userId}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-      toast.dismiss(loadingToast);
-
-      if (data.success) {
-        const updatedUsers = users.filter(user => user._id !== userId);
-        onUsersUpdate(updatedUsers);
-        toast.success("User deleted successfully!", {
-          description: `${userName} has been removed.`,
-        });
-      } else {
-        toast.error("Failed to delete user", {
-          description: data.error,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-      toast.dismiss(loadingToast);
-      toast.error("Failed to delete user", {
-        description: "An error occurred while deleting the user.",
-      });
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedUsers.length === 0) return;
-
-    setDeleting(true);
-    const loadingToast = toast.loading(`Deleting ${selectedUsers.length} users...`, {
-      description: "Please wait while we delete the selected users.",
-    });
-
-    try {
-      const response = await fetch('/api/users/bulk-delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userIds: selectedUsers }),
-      });
-
-      const data = await response.json();
-      toast.dismiss(loadingToast);
-
-      if (data.success) {
-        const updatedUsers = users.filter(user => !selectedUsers.includes(user._id));
-        onUsersUpdate(updatedUsers);
-        setSelectedUsers([]);
-        toast.success("Users deleted successfully!", {
-          description: `${selectedUsers.length} users have been removed.`,
-        });
-      } else {
-        toast.error("Failed to delete users", {
-          description: data.error,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to bulk delete users:", error);
-      toast.dismiss(loadingToast);
-      toast.error("Failed to delete users", {
-        description: "An error occurred while deleting the users.",
-      });
-    } finally {
-      setDeleting(false);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Bulk Actions */}
-      {selectedUsers.length > 0 && (
-        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-              {selectedUsers.length} selected
-            </Badge>
-            <span className="text-sm text-blue-700">
-              {selectedUsers.length === 1 ? '1 user selected' : `${selectedUsers.length} users selected`}
-            </span>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedUsers([])}
-            >
-              Clear Selection
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={deleting}
-                >
-                  {deleting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Selected
-                    </>
-                  )}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Selected Users</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete {selectedUsers.length} selected users? 
-                    This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleBulkDelete}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Delete Users
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </div>
-      )}
-
-      {/* Users Table */}
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50">
-              <TableHead className="w-12">
-                <input
-                  type="checkbox"
-                  checked={selectedUsers.length === users.length && users.length > 0}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="rounded border-gray-300"
-                />
-              </TableHead>
-              <TableHead>User</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-20">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user._id} className="hover:bg-gray-50">
-                <TableCell>
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user._id)}
-                    onChange={(e) => handleSelectUser(user._id, e.target.checked)}
-                    className="rounded border-gray-300"
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                      {(user.firstName?.[0] || user.email[0]).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="font-medium text-sm">
-                        {user.firstName || user.lastName 
-                          ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
-                          : 'N/A'
-                        }
-                      </div>
-                      <div className="text-xs text-gray-500">{user.email}</div>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge 
-                    variant={user.isActive ? "default" : "secondary"}
-                    className={user.isActive 
-                      ? "bg-green-100 text-green-800 border-green-200" 
-                      : "bg-gray-100 text-gray-600 border-gray-200"
-                    }
-                  >
-                    {user.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-gray-500">
-                  {new Date(user.createdAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
-                </TableCell>
-                <TableCell>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete User</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete "{user.firstName || user.lastName 
-                            ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
-                            : user.email
-                          }"? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDeleteUser(
-                            user._id, 
-                            user.firstName || user.lastName 
-                              ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
-                              : user.email
-                          )}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
-                          Delete User
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
-  );
-}

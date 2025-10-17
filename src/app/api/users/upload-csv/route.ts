@@ -60,10 +60,13 @@ export async function POST(request: NextRequest) {
                                 continue;
                             }
 
-                            // Check if user already exists
-                            const existingUser = await UserEmail.findOne({ email });
+                            // Check if user already exists in this category
+                            const existingUser = await UserEmail.findOne({
+                                email: String(email).trim().toLowerCase(),
+                                category: defaultCategory
+                            });
                             if (existingUser) {
-                                skipped.push({ row, reason: 'Email already exists' });
+                                skipped.push({ row, reason: 'Email already exists in this category' });
                                 continue;
                             }
 
